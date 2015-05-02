@@ -1,0 +1,19 @@
+<ion-view view-title="Matches" hide-nav-bar="false">
+    <ion-nav-buttons side="right">
+        <button type="submit" class="button button-icon ion-person-stalker" ng-click="openCreateGroup()"></button>
+        <!-- button type="submit" class="button button-icon ion-calendar" ng-click="openFileDialog('camera')"></button -->
+        <button type="submit" class="button button-icon ion-flag" ng-click="openCreateMatch()"></button>
+        <!-- a class="button button-icon icon ion-ios-plus-outline"></a -->
+        <a href="" ng-click="logout()" class="button">logout</a>
+    </ion-nav-buttons>
+    <ion-content scroll="true">
+        <div class="list">
+            <a ng-repeat="group in groupList" ng-click="openGroupMatchList(group)" class="item" href="#">
+                <h2>{{group.name}}</h2>
+                <p>{{mips.getSideInfo(group.matchList[group.matchList.length-1].sideInfo, group.matchList[group.matchList.length-1].scoreInfo)}} #<span am-time-ago="group.matchList[group.matchList.length-1].date"></span></p>
+            </a>
+        </div>
+
+    </ion-content>
+</ion-view>
+

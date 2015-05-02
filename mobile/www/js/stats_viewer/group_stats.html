@@ -1,0 +1,45 @@
+<ion-view view-title="Group Stats" hide-nav-bar="false">
+    <ion-nav-buttons side="right">
+        <!-- button type="submit" class="button button-icon ion-person-stalker" ng-click="openFileDialog('file')"></button>
+        <button type="submit" class="button button-icon ion-calendar" ng-click="openFileDialog('camera')"></button>
+        <button type="submit" class="button button-icon ion-flag" ng-click="openFileDialog('camera')"></button -->
+    </ion-nav-buttons>
+    <ion-content scroll="true">
+        <div class="list">
+            <div class="item item-divider">
+                Num Games played/ Num Won/
+                For Each Player and Team
+            </div>
+            <div class="item item-divider">
+                Match Summary [Games Per Set]
+            </div>
+            <label class="item">
+            <div class="row">
+                <div class="col"></div>
+                <div ng-repeat="side in matchInfo.sideInfo" class="col"><b>{{getSideNameTempalate($index)}}</b></div>
+            </div>
+            <div class="row">
+                <div class="col"><b>Side 0</b></div>
+                <div ng-repeat="numGame in getNumGamesPerSide() track by $index" class="col"><b>{{numGame}}</b></div>
+            </div>
+            <div class="row">
+                <div class="col"><b>Side 1</b></div>
+                <div ng-repeat="numSet in getNumSetsPerSide() track by $index" class="col"><b>{{numSet}}</b></div>
+            </div>
+            <div class="row">
+                <div class="col"><b>Winner</b></div>
+                <div ng-repeat="numSet in getNumSetsPerSide() track by $index" class="col"><b>{{numSet}}</b></div>
+            </div>
+            </label>
+            <div class="item">
+                Date: {{matchInfo.date}}
+            </div>
+            <div class="item item-divider">
+                Side Details
+            </div>
+            <div class="item item-divider">
+                Tags
+            </div>
+        </div>
+    </ion-content>
+</ion-view>

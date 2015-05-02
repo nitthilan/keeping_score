@@ -1,0 +1,59 @@
+<ion-view view-title="Match Detail" hide-nav-bar="false">
+    <ion-nav-buttons side="right">
+        <!-- button type="submit" class="button button-icon ion-person-stalker" ng-click="openFileDialog('file')"></button>
+        <button type="submit" class="button button-icon ion-calendar" ng-click="openFileDialog('camera')"></button>
+        <button type="submit" class="button button-icon ion-flag" ng-click="openFileDialog('camera')"></button -->
+    </ion-nav-buttons>
+    <ion-content scroll="true">
+        <div class="list">
+            <div class="list list-inset">
+                <div class="item item-divider">
+                    Summary: Winner - {{mips.getSideNameTempalate(matchInfo.scoreInfo.winner)}}
+                </div>
+                <label class="item">
+                    <div class="row">
+                        <div class="col">Set</div>
+                        <div ng-repeat="set in matchInfo.scoreInfo.setList" class="col">S{{$index}}</div>
+                    </div>
+                    <div ng-repeat="side in matchInfo.sideInfo track by $index" class="row">
+                        <div class="col">{{mips.getSideNameTempalate($index)}}({{matchInfo.scoreInfo.summary[$index]}})</div>
+                        <div ng-repeat="set in matchInfo.scoreInfo.setList" class="col">{{set.summary[$parent.$index]}}</div>
+                    </div>
+                </label>
+            </div>
+            <div class="list list-inset">
+                <div ng-repeat="side in matchInfo.sideInfo">
+                    <div class="item item-divider">
+                        {{mips.getSideNameTempalate($index)}}
+                    </div>
+                    <label ng-repeat="player in side" class="item">
+                        {{player.displayName}} [{{player.teamName}}]
+                    </label>
+                </div>
+            </div>
+            <div class="list list-inset">
+                <div ng-show="matchInfo.tagList.length" class="item item-divider">
+                    {{mips.getTag(matchInfo.tagList)}}
+                    [<span am-time-ago="matchInfo.date"></span>]
+                </div>
+            </div>
+            <div ng-repeat="set in matchInfo.scoreInfo.setList">
+                <div class="list list-inset">
+                    <div class="item item-divider">
+                        Set {{$index}}
+                    </div>
+                    <label class="item">
+                        <div class="row">
+                            <div class="col">Game</div>
+                            <div ng-repeat="game in set.gameList" class="col">G{{$index}}</div>
+                        </div>
+                        <div ng-repeat="side in matchInfo.sideInfo track by $index" class="row">
+                            <div class="col">{{mips.getSideNameTempalate($index)}}</div>
+                            <div ng-repeat="game in set.gameList" class="col">{{game.scoreList[$parent.$index]}}</div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </ion-content>
+</ion-view>

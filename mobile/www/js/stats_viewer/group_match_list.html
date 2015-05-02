@@ -1,0 +1,30 @@
+<ion-view view-title="Match List" hide-nav-bar="false">
+    <ion-nav-buttons side="right">
+        <!-- button type="submit" class="button button-icon ion-person-stalker" ng-click="openFileDialog('file')"></button>
+        <button type="submit" class="button button-icon ion-calendar" ng-click="openFileDialog('camera')"></button>
+        <button type="submit" class="button button-icon ion-flag" ng-click="openFileDialog('camera')"></button -->
+    </ion-nav-buttons>
+    <ion-content scroll="true">
+        <div class="list">
+            <div ng-repeat="match in matchList" class="list list-inset" >
+                <a ng-click="openMatchDetail(match)" class="item item-divider" href="#">
+                    {{mips.getSideInfo(match.sideInfo, match.scoreInfo)}}
+                </a>
+                <div class="item">
+                    <div class="row">
+                        <div class="col">Set</div>
+                        <div ng-repeat="set in match.scoreInfo.setList" class="col">S{{$index}}</div>
+                    </div>
+                    <div ng-repeat="side in match.sideInfo track by $index" class="row">
+                        <div class="col">{{mips.getSideNameTempalate($index)}}</div>
+                        <div ng-repeat="set in match.scoreInfo.setList" class="col">{{set.summary[$parent.$index]}}</div>
+                    </div>
+                </div>
+                <div ng-show="match.tagList.length" class="item item-divider">
+                    {{mips.getTag(match.tagList)}}
+                    [<span am-time-ago="match.date"></span>]
+                </div>
+            </div>
+        </div>
+    </ion-content>
+</ion-view>

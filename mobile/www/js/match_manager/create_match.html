@@ -1,0 +1,164 @@
+<ion-view view-title="Create Match" hide-nav-bar="false">
+    <ion-nav-buttons side="right">
+        <!-- button type="submit" class="button button-icon ion-person-stalker" ng-click="openFileDialog('file')"></button>
+        <button type="submit" class="button button-icon ion-calendar" ng-click="openFileDialog('camera')"></button>
+        <button type="submit" class="button button-icon ion-flag" ng-click="openFileDialog('camera')"></button -->
+    </ion-nav-buttons>
+    <ion-content scroll="true">
+        <div class="list">
+            <div class="item item-button-right">
+                <b>Select Group</b>
+                <button ng-click="openChooseGroupModal()" class="button button-positive">
+                    <i class="icon ion-plus-round"></i>
+                </button>
+            </div>
+            <li ng-if="selected_group" class="item">
+                {{selected_group.name}}
+            </li>
+            <div ng-if="selected_group">
+            <div class="item item-button-right">
+                <b>Modify sides & players/side</b>
+                <button ng-click="openNumSidesModal()" class="button button-positive">
+                    <i class="icon ion-plus-round"></i>
+                </button>
+            </div>
+            <div ng-repeat="side in sideInfo">
+                <div class="item item-button-right">
+                    <b>{{mips.getSideNameTempalate($index)}}:</b> Add Players
+                    <button ng-click="openChoosePlayersModal($index)" class="button button-positive">
+                        <i class="icon ion-plus-round"></i>
+                    </button>
+                </div>
+                <li ng-repeat="player in side" class="item">
+                    {{player.displayName}}
+                </li>
+            </div>
+            <div class="item item-button-right">
+                <b>Select Tags</b>
+                <button ng-click="openChooseTagsModal()" class="button button-positive">
+                    <i class="icon ion-plus-round"></i>
+                </button>
+            </div>
+            <li ng-repeat="tag in matchTagList" class="item">
+                {{tag}}
+            </li>
+            <button ng-click="startMatch()" class="button button-full button-positive">Start Match</button>
+            <div>
+        </div>
+    </ion-content>
+</ion-view>
+
+<script id="choose_group.html" type="text/ng-template">
+<ion-modal-view>
+<ion-header-bar>
+    <h1 class="title">Choose group</h1>
+</ion-header-bar>
+<ion-content>
+    <ion-radio ng-repeat="group in groupList"
+               ng-value="group._id"
+               ng-model="selected_group.data"
+               ng-change="closeChooseGroupModal(group, $index)"
+               name="group_selection">
+      {{ group.name }}
+    </ion-radio>
+</ion-content>
+</ion-modal-view>
+</script>
+<script id="num_sides.html" type="text/ng-template">
+<ion-modal-view>
+<ion-header-bar>
+    <h1 class="title">Sides/Players</h1>
+</ion-header-bar>
+<ion-content>
+    <div class="item item-divider">
+    Select Num Sides
+    </div>
+    <label class="item item-radio">
+        <input ng-model="sides.num_sides" type="radio" name="num_sides" value="2">
+        <div class="item-content">2</div>
+        <i class="radio-icon ion-checkmark"></i>
+    </label>
+    <label class="item item-radio">
+        <input ng-model="sides.num_sides" type="radio" name="num_sides" value="4">
+        <div class="item-content">4</div>
+        <i class="radio-icon ion-checkmark"></i>
+    </label>
+    <div class="item item-divider">
+    Select Num Players Per Side
+    </div>
+    <label class="item item-radio">
+        <input ng-model="sides.num_players_per_side" type="radio" name="num_players" value="1">
+        <div class="item-content">1</div>
+        <i class="radio-icon ion-checkmark"></i>
+    </label>
+    <label class="item item-radio">
+        <input ng-model="sides.num_players_per_side" type="radio" name="num_players" value="2">
+        <div class="item-content">2</div>
+        <i class="radio-icon ion-checkmark"></i>
+    </label>
+    <button ng-click="closeNumSidesModal()" class="button button-full button-positive">Done</button>
+</ion-content>
+</ion-modal-view>
+</script>
+<script id="choose_players.html" type="text/ng-template">
+<ion-modal-view>
+<ion-header-bar>
+    <h1 class="title">Select Players</h1>
+</ion-header-bar>
+<ion-content>
+    <div class="item item-divider">
+    Select
+    </div>
+    <ion-radio ng-repeat="player in unchoosenList"
+               ng-value="player._id"
+               ng-model="selected_player.data"
+               ng-change="addPlayer(player, $index)"
+               name="player_selection">
+      {{ player.displayName }} [{{ player.teamName }}]
+    </ion-radio>
+    <div class="item item-divider">
+    Players in side
+    </div>
+    <ion-list show-delete="true">
+        <ion-item ng-repeat="player in sideInfo[choosen_side.index]">
+        {{player.displayName}} [{{ player.teamName }}]
+        <ion-delete-button class="ion-minus-circled"
+                       ng-click="removePlayer(player, $index)">
+        </ion-delete-button>
+        </ion-item>
+    </ion-list>
+    <button ng-click="closeChoosePlayersModal()" class="button button-full button-positive">Done</button>
+</ion-content>
+</ion-modal-view>
+</script>
+<script id="choose_tags.html" type="text/ng-template">
+<ion-modal-view>
+<ion-header-bar>
+    <h1 class="title">Select Tags</h1>
+</ion-header-bar>
+<ion-content>
+    <div class="item item-divider">
+    Tag options available
+    </div>
+    <ion-radio ng-repeat="tag in groupTagList"
+               ng-value="tag"
+               ng-model="selected_player.data"
+               ng-change="addTag(tag, $index)"
+               name="tag_selection">
+      {{ tag }}
+    </ion-radio>
+    <div class="item item-divider">
+    Selected Tags
+    </div>
+    <ion-list show-delete="true">
+        <ion-item ng-repeat="tag in matchTagList">
+        {{tag}}
+        <ion-delete-button class="ion-minus-circled"
+                       ng-click="removeTag(tag, $index)">
+        </ion-delete-button>
+        </ion-item>
+    </ion-list>
+    <button ng-click="closeChooseTagsModal()" class="button button-full button-positive">Done</button>
+</ion-content>
+</ion-modal-view>
+</script>
