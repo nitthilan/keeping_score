@@ -110,7 +110,7 @@
     Select
     </div>
     <ion-radio ng-repeat="player in unchoosenList"
-               ng-value="player._id"
+               ng-value="player.playerId"
                ng-model="selected_player.data"
                ng-change="addPlayer(player, $index)"
                name="player_selection">

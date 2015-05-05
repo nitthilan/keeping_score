@@ -63,6 +63,7 @@ MyApp.config(['$stateProvider', '$urlRouterProvider', '$authProvider', '$locatio
         url: '/create_group',
         templateUrl: 'js/group_manager/create_group.html',
         controller: 'CreateGroupCtrl',
+        params:{groupInfo:null},
         resolve: {
           authenticated: ['$location', '$auth', function($location, $auth) {
             if (!$auth.isAuthenticated()) {
@@ -140,8 +141,8 @@ MyApp.config(['$stateProvider', '$urlRouterProvider', '$authProvider', '$locatio
 
     $urlRouterProvider.otherwise('/');
 
-    //var url = 'http://localhost:3000';
-    var url = 'http://www.brightboard.co.in';
+    var url = 'http://localhost:3000';
+    //var url = 'http://www.brightboard.co.in';
 
     $authProvider.facebook({
       url: url+'/auth/facebook',

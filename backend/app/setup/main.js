@@ -53,13 +53,7 @@ io.use(socketio_jwt.authorize({
 }));
 io.sockets.on('connection', function (socket) {
 	log.info("Connection established with client "+socket.decoded_token.sub);
-	require(config.root + './imagecleaner/imagecleaner.js')(socket, config);
-  require(config.root + './collaboration/meetingManager.js')(socket, config, io);
-  //require(config.root + './notebook/pagesLoadUpload.js')(socket, config);
-  require(config.root + './notebook/socketApiBase.js')(socket, config,
-    require(config.root + './notebook/pagesModel.js'));
-  require(config.root + './notebook/socketApiBase.js')(socket, config,
-    require(config.root + './notebook/notebooksModel.js'));
+  require(config.root + './match_manager/group_manager.js')(socket, config);
 });
 // Clients use this to time out their tokens
 setInterval(function () {
@@ -74,6 +68,9 @@ require(config.root + './setup/routes.js')(app, config, auth);
 
 // Initialise the application
 require(config.root + './setup/initialisation.js')(config);
+
+// Initialising the models
+require(config.root + './match_manager/group_model.js');
 
 // Start the app by listening on <port>
 var port = process.env.PORT || config.port;

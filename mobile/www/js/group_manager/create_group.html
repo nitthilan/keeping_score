@@ -70,7 +70,7 @@
                ng-model="selected_player.data"
                ng-change="choosenPlayer(player)"
                name="player_selection">
-      {{ player.displayName }}
+      {{ player.displayName }} {{ player.email }}
     </ion-radio>
     <div class="item item-divider">
         Player List
@@ -104,7 +104,7 @@
         Un-Selected Player List
     </div>
     <ion-radio ng-repeat="player in team.unchoosenPlayerList"
-               ng-value="player._id"
+               ng-value="player.playerId"
                ng-model="selected_player.data1"
                ng-change="addPlayerToTeam(player, $index)"
                name="player_selection">

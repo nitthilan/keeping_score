@@ -1,9 +1,12 @@
 <ion-view view-title="Match List" hide-nav-bar="false">
     <ion-nav-buttons side="right">
-        <!-- button type="submit" class="button button-icon ion-person-stalker" ng-click="openFileDialog('file')"></button>
-        <button type="submit" class="button button-icon ion-calendar" ng-click="openFileDialog('camera')"></button>
+        <button type="submit" class="button button-icon ion-edit" ng-click="editGroup()"></button>
+        <!--button type="submit" class="button button-icon ion-calendar" ng-click="openFileDialog('camera')"></button>
         <button type="submit" class="button button-icon ion-flag" ng-click="openFileDialog('camera')"></button -->
     </ion-nav-buttons>
+    <ion-nav-title>
+      {{groupInfo.name}}
+    </ion-nav-title>
     <ion-content scroll="true">
         <div class="list">
             <div ng-repeat="match in matchList" class="list list-inset" >

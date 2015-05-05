@@ -1,39 +1,76 @@
 angular.module('MyApp')
-    .service('GroupListService', ['mySocket',function(mySocket){
+    .service('GroupListService', ['mySocket', '$filter',function(mySocket, $filter){
 
     var that = this;
     that.init = function(){
-        that.createGroupList()
+        that.createGroupList();
     }
-    that.id = 0;
-    that.getId = function(){
-        that.id++;
-        return that.id;
-    }
-    that.searchName = function(name){
-        var nameList = [
+    that.searchName = function(name, callback){
+        /* var nameList = [
         {_id:"0000",displayName:"KJN"},
         {_id:"0001",displayName:"KJN1"},
         {_id:"0002",displayName:"KJN2"},
         {_id:"0003",displayName:"KJN3"}
-        ];
-        return nameList;
+        ];*/
+        mySocket.emit("findPlayers",
+            // http://docs.mongodb.org/manual/reference/operator/query/or/
+            {$or:[{displayName:{ "$regex": name, "$options": "i" }},
+             {email:{ "$regex": name, "$options": "i" }}]},'',
+            function(error, nameList){
+            if(error){
+                console.log("Error in query", name);
+                return callback(error, null);
+            }
+            console.log(error, nameList, name);
+            return callback(null, nameList);
+        });
+    }
+    that.create = function(groupInfo, callback){
+        mySocket.emit("groupCreate", groupInfo, function(error, groupInfoSaved){
+            if(error){return callback(error);}
+            that.groupList.push(groupInfoSaved);
+            return callback(null);
+        });
+    }
+    that.edit = function(id, groupInfo, callback){
+        mySocket.emit("groupUpdate", id, groupInfo,
+            function(error, groupInfoSaved){
+            if(error){return callback(error);}
+            that.groupList.push(groupInfoSaved);
+            return callback(null);
+        });
+    }
+    that.addMatchInfo = function(matchInfo, groupId, callback){
+        mySocket.emit("addMatch", matchInfo, groupId, function(error){
+        console.log("Error in saving match ", error, matchInfo);
+        if(error) return callback(error);
+        var group = $filter('filter')(that.groupList, {_id:groupId});
+
+        if(group.length !== 1){
+            return callback(new Error("Unable to find the specified group"));
+        }
+        console.log("filtered group", group, groupId);
+        group[0].matchList.push(matchInfo);
+
+        return callback(error);
+        });
     }
     that.createGroupList = function(){
         that.groupList = [{
             _id:"0",
             name:"group1",
+            adminList:[{playerId:"0000",displayName:"KJN0"}],
             playerList:[
-                {_id:"0000",displayName:"KJN0", teamName:"team1"},
-                {_id:"0001",displayName:"KJN1", teamName:"team2"},
-                {_id:"0002",displayName:"KJN2", teamName:"team3"}
+                {playerId:"0000",displayName:"KJN0"},
+                {playerId:"0001",displayName:"KJN1", teamName:"team2"},
+                {playerId:"0002",displayName:"KJN2", teamName:"team3"}
             ],
             tagList:["tag1","tag2"],
             matchList:[{
                 // Array of Sides and each array having array of players
                 sideInfo:[
-                    [{_id:"0000",displayName:"KJN1", teamName:"team1"}],
-                    [{_id:"0001",displayName:"KJN2", teamName:"team2"}],
+                    [{playerId:"0000",displayName:"KJN1", teamName:"team1"}],
+                    [{playerId:"0001",displayName:"KJN2", teamName:"team2"}],
                 ],
                 // Array of sets and each set having array of games
                 // Each game having array of side scores and winner
@@ -68,16 +105,16 @@ angular.module('MyApp')
             _id:"1",
             name:"group2",
             playerList:[
-                {_id:"0000",displayName:"KJN"},
-                {_id:"0001",displayName:"KJN1"},
-                {_id:"0002",displayName:"KJN2"}
+                {playerId:"0000",displayName:"KJN"},
+                {playerId:"0001",displayName:"KJN1"},
+                {playerId:"0002",displayName:"KJN2"}
             ],
             tagList:["tag1","tag2"],
             matchList:[{
                 // Array of Sides and each array having array of players
                 sideInfo:[
-                    [{_id:"0000",displayName:"G2KJN1", teamName:"team1"}],
-                    [{_id:"0001",displayName:"G2KJN2", teamName:"team2"}],
+                    [{playerId:"0000",displayName:"G2KJN1", teamName:"team1"}],
+                    [{playerId:"0001",displayName:"G2KJN2", teamName:"team2"}],
                 ],
                 // Array of sets and each set having array of games
                 // Each game having array of side scores and winner
@@ -110,8 +147,8 @@ angular.module('MyApp')
             },{
                 // Array of Sides and each array having array of players
                 sideInfo:[
-                    [{_id:"0000",displayName:"G2KJN1", teamName:"team1"}],
-                    [{_id:"0001",displayName:"G2KJN3", teamName:"team2"}],
+                    [{playerId:"0000",displayName:"G2KJN1", teamName:"team1"}],
+                    [{playerId:"0001",displayName:"G2KJN3", teamName:"team2"}],
                 ],
                 // Array of sets and each set having array of games
                 // Each game having array of side scores and winner
@@ -143,28 +180,15 @@ angular.module('MyApp')
                 date:Date()
             }]
         }];
+        mySocket.emit("findGroups", {},'', function(error, queriedGroupList){
+            if(error){return;}
+            console.log("Queried groupInfo ", queriedGroupList);
+            for(var i in queriedGroupList){
+                that.groupList.push(queriedGroupList[i]);
+            }
+        });
     }
 
-    that.add = function(groupInfo){
-        if(groupInfo._id === undefined){
-            groupInfo._id = that.getId();
-        }
-        that.groupList.push(groupInfo);
-    }
-    that.addMatchInfo = function(matchInfo, groupId){
-        for(var i=0;i<that.groupList.length;i++ ){
-            var id = that.groupList[i]._id;
-            if(id === groupId){
-                break;
-            }
-        }
-        if(i === that.groupList.length){
-            console.log("Error in group id", groupId);
-            return;
-        }
-        var group = that.groupList[i];
-        group.matchList.push(matchInfo);
-    }
     that.getMatchList = function(groupId){
         for(var i=0;i<that.groupList.length;i++){
             if(that.groupList[i]._id===groupId){

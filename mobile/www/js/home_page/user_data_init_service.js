@@ -1,14 +1,15 @@
 angular.module('MyApp')
     .service('UserDataInitService', ['$auth', 'LoginDetectService', 'mySocket',
-        'GroupListService',
-        function($auth, LoginDetectService, mySocket, GroupListService){
+        'GroupListService', 'UserProfile',
+        function($auth, LoginDetectService, mySocket, GroupListService, UserProfile){
 
     var that = this;
 
     that.init = function(){
         if(LoginDetectService.isUserLoggedin()){
-            //mySocket.ioconnect({forceNew: true, query: 'token=' + $auth.getToken()});
+            mySocket.ioconnect({forceNew: true, query: 'token=' + $auth.getToken()});
             GroupListService.init();
+            UserProfile.init();
 
             // Set flag to false
             LoginDetectService.resetLogin();

@@ -153,6 +153,7 @@ app.get('/auth/unlink/:provider', ensureAuthenticated, function(req, res) {
 // | Login with Google
 // |--------------------------------------------------------------------------
 var create_user_google = function(req, res, accessToken){
+  //https://developers.google.com/+/api/openidconnect/getOpenIdConnect
   var peopleApiUrl = 'https://www.googleapis.com/plus/v1/people/me/openIdConnect';
   var headers = { Authorization: 'Bearer ' + accessToken };
 
@@ -175,6 +176,7 @@ var create_user_google = function(req, res, accessToken){
           }
           user.google = profile.sub;
           user.displayName = user.displayName || profile.name;
+          user.email = user.email || profile.email;
           user.save(function(err) {
             if(err) return res.send(400, { message: 'Unable to save user '+JSON.stringify(user)+'error:'+JSON.stringify(err) });
             res.send({ token: createToken(user) });
@@ -191,6 +193,7 @@ var create_user_google = function(req, res, accessToken){
         var user = new User();
         user.google = profile.sub;
         user.displayName = profile.name;
+        user.email = profile.email;
         user.save(function(err) {
           if(err) return res.send(400, { message: 'Unable to save user '+JSON.stringify(user)+'error:'+JSON.stringify(err) });
           res.send({ token: createToken(user) });
@@ -244,6 +247,8 @@ var create_user_facebook = function(req, res, accessToken){
           }
           user.facebook = profile.id;
           user.displayName = user.displayName || profile.name;
+          //https://developers.facebook.com/docs/graph-api/reference/user
+          user.email = user.email || profile.email;
           user.save(function(err) {
             if(err) return res.send(400, { message: 'Unable to save user '+JSON.stringify(user)+'error:'+JSON.stringify(err) });
             res.send({ token: createToken(user) });
@@ -260,6 +265,8 @@ var create_user_facebook = function(req, res, accessToken){
         var user = new User();
         user.facebook = profile.id;
         user.displayName = profile.name;
+        //https://developers.facebook.com/docs/graph-api/reference/user
+        user.email = profile.email;
         user.save(function(err) {
           if(err) return res.send(400, { message: 'Unable to save user '+JSON.stringify(user)+'error:'+JSON.stringify(err) });
           res.send({ token: createToken(user) });

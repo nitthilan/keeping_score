@@ -13,7 +13,10 @@ angular.module('MyApp')
         return  empty_game;
     }
     this.getEmptySet = function(numSides){
-        var empty_set = {gameList:[],winner:null};
+        var empty_set = {gameList:[],winner:null,summary:[]};
+        for(var i=0;i<numSides;i++){
+            empty_set.summary.push(0);
+        }
         empty_set.gameList.push(this.getEmptyGame(numSides));
         return empty_set
     }
@@ -64,6 +67,7 @@ angular.module('MyApp')
         return winner;
     }
     this.getSideInfo = function(sideList, scoreInfo){
+        if(!sideList) return "";
         //console.log(sideList);
         var sideInfo = "";
         for(var i=0;i<sideList.length;i++){

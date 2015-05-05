@@ -1,17 +1,13 @@
 angular.module('MyApp')
-  .controller('UserHomeCtrl', ['$scope', 'Account','UserDataInitService', '$state',
+  .controller('UserHomeCtrl', ['$scope', 'UserDataInitService', '$state',
     '$auth', 'AlertService', 'mySocket','DataLoadingAnimationService',
-    'GroupListService', 'MatchInfoParseService',
-    function($scope, Account, UserDataInitService,
+    'GroupListService', 'MatchInfoParseService','UserProfile',
+    function($scope, UserDataInitService,
       $state, $auth, AlertService, mySocket, DataLoadingAnimationService,
-      GroupListService, MatchInfoParseService) {
+      GroupListService, MatchInfoParseService, UserProfile) {
     // Initialise the service into the scope so that it can be used directly in view for databinding
     UserDataInitService.init();
-    // View uses the Account service directly
-    Account.getProfile(function(userProfile){
-    $scope.userProfile = userProfile;
-    });
-
+    console.log(UserProfile.userProfile);
     $scope.openCreateMatch=function() {
       $state.go('create_match');
     };
@@ -29,6 +25,7 @@ angular.module('MyApp')
     };
     $scope.groupList = GroupListService.groupList;
     $scope.mips = MatchInfoParseService;
+    $scope.userProfile = UserProfile;
 
   }]);
 

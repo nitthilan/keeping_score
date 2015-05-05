@@ -1,17 +1,35 @@
 angular.module('MyApp')
   .controller('CreateGroupCtrl', ['$scope', '$state','$auth', 'AlertService',
     'UserDataInitService','$ionicModal', '$filter', 'GroupListService',
+    'UserProfile', '$stateParams',
     function($scope, $state, $auth, AlertService, UserDataInitService,
-        $ionicModal, $filter, GroupListService) {
+        $ionicModal, $filter, GroupListService, UserProfile, $stateParams) {
     // Initialise the service into the scope so that it can be used directly in view for databinding
     UserDataInitService.init();
 
-    $scope.groupInfoEdit = {
-        name:null,
-        playerList:[],
-        tagList:[],
+    if($stateParams.groupInfo){
+        $scope.groupInfoEdit = {
+            name:$stateParams.groupInfo.name,
+            playerList:$stateParams.groupInfo.playerList,
+            tagList:$stateParams.groupInfo.tagList,
+        };
+    }
+    else{
+        $scope.groupInfoEdit = {
+            name:null,
+            playerList:[],
+            tagList:[],
+            matchList:[]
+        };
+    }
 
-    };
+
+    var getPlayer = function(player, isAdmin){
+        return {playerId:player._id, displayName:player.displayName,
+            teamName: null, isAdmin:isAdmin}
+    }
+
+
     $scope.saveGroupInfo = function(){
         if(!$scope.groupInfoEdit.name){
             AlertService.message('Invalid Name', "Group");
@@ -21,8 +39,35 @@ angular.module('MyApp')
             AlertService.message('Empty player list', "Group");
             return;
         }
-        GroupListService.add($scope.groupInfoEdit);
-        $state.go('user_home');
+        // Adding the logged in user as administrator
+        if(!UserProfile.userProfile){
+            AlertService.message('Unable to receive logged in user', "Group");
+            return;
+        }
+        var loggedUser = $filter('filter')($scope.groupInfoEdit.playerList,
+            {playerId:UserProfile.userProfile._id});
+        if(!loggedUser.length){
+            $scope.groupInfoEdit.playerList.push(getPlayer(UserProfile.userProfile, true));
+        }
+        else{
+            loggedUser[0].isAdmin = true
+        }
+        //console.log("groupInfo add", $scope.groupInfoEdit);
+        var callback = function(error){
+            if(error){
+                console.log("Error in group", error, $scope.groupInfoEdit);
+                AlertService.message('Error in storing the group'+error, "Group");
+                return;
+            }
+            $state.go('user_home');
+        }
+        if(!$stateParams.groupInfo){
+            GroupListService.create($scope.groupInfoEdit, callback);
+        }
+        else{
+            GroupListService.edit($stateParams.groupInfo._id,
+                $scope.groupInfoEdit, callback);
+        }
     }
 
     $ionicModal.fromTemplateUrl('search_and_add_players.html', {
@@ -53,31 +98,37 @@ angular.module('MyApp')
     $scope.player_search_list = [];
     $scope.search = {name:null};
     $scope.searchPlayers = function(name){
-        console.log("Search string"+name);
-        $scope.player_search_list = GroupListService.searchName(name);
+        if(!name|| !name.length) return;
+        //console.log("Search string "+name);
+        GroupListService.searchName(name, function(error, nameList){
+            if(error){
+                AlertService.message('Error in Query'+error, "Search Player");
+                return;
+            }
+            $scope.player_search_list = nameList;
+        });
         $scope.search.name = null;
 
     }
     $scope.choosenPlayer = function(player){
-        if(!$filter('filter')($scope.groupInfoEdit.playerList, {_id:player._id}).length){
-            $scope.groupInfoEdit.playerList.push({_id:player._id,
-                displayName:player.displayName, teamName: null});
+        if(!$filter('filter')($scope.groupInfoEdit.playerList,
+            {playerId:player._id}).length){
+            $scope.groupInfoEdit.playerList.push(getPlayer(player, false));
         }
+        $scope.player_search_list = null;
     };
     $scope.removePlayer = function($index){
         $scope.groupInfoEdit.playerList.splice($index, 1)
     };
 
-    /*$scope.selected_player = {
-        data:""
-    };*/
-
     $scope.teamList = {};
-    for(i in $scope.groupInfoEdit.playerList){
-        if($scope.groupInfoEdit.playerList.teamName){
-            $scope.teamList[$scope.groupInfoEdit.playerList.teamName] = true;
+    for(var i in $scope.groupInfoEdit.playerList){
+        console.log($scope.groupInfoEdit.playerList[i].teamName);
+        if($scope.groupInfoEdit.playerList[i].teamName){
+            $scope.teamList[$scope.groupInfoEdit.playerList[i].teamName] = true;
         }
     }
+    //console.log($scope.teamList);
     $scope.openCreateTeamModal = function(teamName) {
         $scope.team = {unchoosenPlayerList:[],name:null,choosenPlayerList:[]}
 
