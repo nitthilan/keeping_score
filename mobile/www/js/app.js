@@ -141,8 +141,8 @@ MyApp.config(['$stateProvider', '$urlRouterProvider', '$authProvider', '$locatio
 
     $urlRouterProvider.otherwise('/');
 
-    var url = 'http://localhost:3000';
-    //var url = 'http://www.brightboard.co.in:3002';
+    //var url = 'http://localhost:3000';
+    var url = 'http://www.brightboard.co.in:3002';
 
     $authProvider.facebook({
       url: url+'/auth/facebook',

@@ -19,7 +19,7 @@ angular.module('MyApp')
     };
 
     $scope.login = function() {
-      $auth.login({ email: "demouser@brightboard.co.in", password: "demouser" })
+      $auth.login({ email: "demouser@keepingscore.co.in", password: "demouser" })
         .then(function() {
           loginSuccessful("Used email and password");
         })
@@ -32,7 +32,7 @@ angular.module('MyApp')
         ["https://www.googleapis.com/auth/userinfo.email"]).then(function(result) {
             // results
             console.log(result);
-            var post_url = 'http://www.brightboard.co.in/auth/google/mobile';
+            var post_url = 'http://www.brightboard.co.in:3002/auth/google/mobile';
             $http.post(post_url, {accessToken:result.access_token}).
             success(function(data, status, headers, config) {
               $window.localStorage['satellizer_token'] = data.token;

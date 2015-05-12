@@ -1,3 +1,4 @@
+cd /home/ubuntu/workspace/keeping_score/backend
 sudo npm install
 export NODE_ENV='production'
 printenv NODE_ENV

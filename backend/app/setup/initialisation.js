@@ -6,7 +6,7 @@ module.exports = function(config){
   var User = mongoose.model('ksuser');
 
   // Drop the User table
-  User.remove({}, function(err) {
+  /*User.remove({}, function(err) {
     log.info('User collection removed and added only one user '+err);
     // Create a user into the table
     var user = new User();
@@ -14,7 +14,7 @@ module.exports = function(config){
     user.password = 'demouser';
     user.displayName = 'Keeping Scorer'
     user.save();
-  });
+  });*/
   // Make the temporary and public files folder:
   /*mkdirp(config.temp_folder_path, function(err) {
     if(err) log.error("Error in creating temporary folder");
