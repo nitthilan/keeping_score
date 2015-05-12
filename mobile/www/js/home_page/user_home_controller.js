@@ -1,10 +1,10 @@
 angular.module('MyApp')
   .controller('UserHomeCtrl', ['$scope', 'UserDataInitService', '$state',
-    '$auth', 'AlertService', 'mySocket','DataLoadingAnimationService',
-    'GroupListService', 'MatchInfoParseService','UserProfile',
+    '$auth', 'AlertService', 'mySocket','MessageHandlingService',
+    'GroupListService', 'MatchInfoParseService','UserProfile', 'MatchListService',
     function($scope, UserDataInitService,
-      $state, $auth, AlertService, mySocket, DataLoadingAnimationService,
-      GroupListService, MatchInfoParseService, UserProfile) {
+      $state, $auth, AlertService, mySocket, MessageHandlingService,
+      GroupListService, MatchInfoParseService, UserProfile, MatchListService) {
     // Initialise the service into the scope so that it can be used directly in view for databinding
     UserDataInitService.init();
     console.log(UserProfile.userProfile);
@@ -14,8 +14,8 @@ angular.module('MyApp')
     $scope.openCreateGroup=function() {
       $state.go('create_group');
     };
-    $scope.openGroupMatchList=function(group) {
-      $state.go('group_match_list',{groupInfo:group});
+    $scope.openGroupMatchList=function(groupInfo, matchList) {
+      $state.go('group_match_list',{groupInfo:groupInfo, matchList:matchList});
     }
     $scope.logout = function(){
         $auth.logout().then(function() {
@@ -23,9 +23,14 @@ angular.module('MyApp')
             AlertService.message('You have been logged out');
         });
     };
+    $scope.refreshMessageList = function(){
+      MessageHandlingService.getNewMessages();
+    }
     $scope.groupList = GroupListService.groupList;
+    $scope.matchList = MatchListService.groupMatchList;
     $scope.mips = MatchInfoParseService;
     $scope.userProfile = UserProfile;
+    MessageHandlingService.getNewMessages();
 
   }]);
 

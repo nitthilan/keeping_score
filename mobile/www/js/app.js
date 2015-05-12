@@ -112,7 +112,7 @@ MyApp.config(['$stateProvider', '$urlRouterProvider', '$authProvider', '$locatio
       })
       .state('group_match_list', {
         url: '/group_match_list',
-        params:{groupInfo:null},
+        params:{groupInfo:null, matchList:null},
         templateUrl: 'js/stats_viewer/group_match_list.html',
         controller: 'GroupMatchListCtrl',
         resolve: {
@@ -142,7 +142,7 @@ MyApp.config(['$stateProvider', '$urlRouterProvider', '$authProvider', '$locatio
     $urlRouterProvider.otherwise('/');
 
     var url = 'http://localhost:3000';
-    //var url = 'http://www.brightboard.co.in';
+    //var url = 'http://www.brightboard.co.in:3002';
 
     $authProvider.facebook({
       url: url+'/auth/facebook',

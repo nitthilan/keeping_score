@@ -53,7 +53,8 @@ io.use(socketio_jwt.authorize({
 }));
 io.sockets.on('connection', function (socket) {
 	log.info("Connection established with client "+socket.decoded_token.sub);
-  require(config.root + './match_manager/group_manager.js')(socket, config);
+  require(config.root + './match_manager/group_manager.js')(socket, config,
+    require(config.root + './match_manager/message_model.js'));
 });
 // Clients use this to time out their tokens
 setInterval(function () {

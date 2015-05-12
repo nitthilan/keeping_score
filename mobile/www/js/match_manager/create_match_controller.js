@@ -117,7 +117,7 @@ angular.module('MyApp')
 
 
     $scope.startMatch = function(){
-        console.log($scope.sideInfo);
+        //console.log($scope.sideInfo);
         $state.go('start_scoring',
             {sideInfo:$scope.sideInfo, tagList:$scope.matchTagList,
                 groupId:$scope.selected_group._id});

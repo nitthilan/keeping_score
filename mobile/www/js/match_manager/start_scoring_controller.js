@@ -1,8 +1,9 @@
 angular.module('MyApp')
   .controller('StartScoringCtrl', ['$scope', '$state','AlertService',
-    'UserDataInitService','$stateParams', 'MatchInfoParseService', 'GroupListService',
+    'UserDataInitService','$stateParams', 'MatchInfoParseService',
+    'MatchListService', 'MessageHandlingService',
     function($scope, $state, AlertService, UserDataInitService, $stateParams,
-        MatchInfoParseService, GroupListService) {
+        MatchInfoParseService, MatchListService, MessageHandlingService) {
     // Initialise the service into the scope so that it can be used directly in view for databinding
     UserDataInitService.init();
 
@@ -28,89 +29,106 @@ angular.module('MyApp')
         var curSetIdx = $scope.getCurSetIdx();
         return $scope.scoreInfo.setList[curSetIdx].gameList.length-1;
     }
-    var validateSet = function(){
-        var curGame = $scope.getCurGame();
-        var winner = curGame.winner;
-        var gameList = $scope.scoreInfo.setList[$scope.getCurSetIdx()].gameList;
-        var numSides = $scope.sideInfo.length;
-        var expWinner = $scope.mips.getSetWinner(gameList, numSides);
-        if(expWinner !== winner){
-            AlertService.message("Check winner is valid.Expected: "+
-                $scope.mips.getSideNameTempalate(expWinner)+" .Choosen: "+
-                $scope.mips.getSideNameTempalate(winner) ,"Set Over");
-            return false;
+    $scope.getCurGame = function(){
+        var setIdx = $scope.getCurSetIdx();
+        var gameIdx = $scope.getCurGameIdx();
+        return $scope.scoreInfo.setList[setIdx].gameList[gameIdx];
+    }
+
+    $scope.addNewGame = function(){
+        var winner = $scope.mips.getGameWinner($scope.getCurGame());
+        if(winner === -1) {
+            AlertService.message("Draw not possible :(","Game Winner");
+            return;
         }
-        return true;
+        AlertService.confirm(
+            "Starting New Game. Is "+$scope.mips.getSideNameTempalate(winner)+" the winner?",
+            "Game Winner",
+            function(response){
+        if(!response) return;
+        // Update Game level
+        $scope.getCurGame().winner = winner;
+        $scope.scoreInfo.setList[$scope.getCurSetIdx()].summary[$scope.getCurGame().winner]++;
+        // Add New Game
+        $scope.scoreInfo.setList[$scope.getCurSetIdx()].gameList
+            .push($scope.mips.getEmptyGame($scope.sideInfo.length));
+        });
     }
     $scope.addNewSet = function(){
-        if(!validateGame()) return;
-        if(!validateSet()) return;
-        var curGame = $scope.getCurGame();
-        var winner = curGame.winner;
+        var winner = $scope.mips.getGameWinner($scope.getCurGame());
+        if(winner === -1) {
+            AlertService.message("Game draw not possible :(","Game Winner");
+            return;
+        }
+        var setWinner =
+            $scope.mips.getSetWinner(
+                $scope.scoreInfo.setList[$scope.getCurSetIdx()].gameList,
+                $scope.sideInfo.length, winner);
+        if(setWinner === -1) {
+            AlertService.message("Set draw not possible :(","Set Winner");
+            return;
+        }
+        if(setWinner !== winner) {
+            console.error("Set winner not equal to game winner. Not Possible",setWinner, winner);
+        }
+        AlertService.confirm(
+            "Starting New Set. Is "+$scope.mips.getSideNameTempalate(winner)+" the winner?",
+            "Set Winner",
+            function(response){
+        if(!response) return;
+        // Update game level
+        $scope.getCurGame().winner = winner;
+        $scope.scoreInfo.setList[$scope.getCurSetIdx()].summary[$scope.getCurGame().winner]++;
+        // Update set level
         $scope.scoreInfo.setList[$scope.getCurSetIdx()].winner = winner;
         $scope.scoreInfo.summary[winner]++;
-        AlertService.message("Winner: "+$scope.mips.getSideNameTempalate(curGame.winner)+
-            ". Starting new Set", "New Set");
+        // Add new set
         $scope.scoreInfo.setList.push($scope.mips.getEmptySet($scope.sideInfo.length));
-        //console.log($scope.scoreInfo);
-        //console.log($scope.scoreInfo.setList[$scope.getCurSetIdx()].gameList[$scope.getCurGameIdx()].scoreList[0]);
+        });
     }
     $scope.scoreInfo.setList.push($scope.mips.getEmptySet($scope.sideInfo.length));
 
-    var validateGame = function(){
-        var curGame = $scope.getCurGame();
-        if(curGame.winner === null){
-            AlertService.message("Choose a winner","Game Over");
-            return false;
-        }
-        var maxScore = 0;
-        var winnerIdx = -1;
-        for(var i in curGame.scoreList){
-            if(curGame.scoreList[i] > maxScore){
-                maxScore = curGame.scoreList[i];
-                winnerIdx = i;
-            }
-        }
-        if(curGame.winner !== winnerIdx){
-            AlertService.message("Check winner is valid.Expected: "+
-                $scope.mips.getSideNameTempalate(winnerIdx)+" .Set: "+
-                $scope.mips.getSideNameTempalate(curGame.winner) ,"Game Over");
-            return false;
-        }
-        return true;
-    }
-    $scope.addNewGame = function(){
-        if(!validateGame()) return;
-        var curGame = $scope.getCurGame();
-        AlertService.message("Winner: "+$scope.mips.getSideNameTempalate(curGame.winner)+
-            ". Starting new Game", "New Game");
-        $scope.scoreInfo.setList[$scope.getCurSetIdx()].summary[curGame.winner]++;
-        $scope.scoreInfo.setList[$scope.getCurSetIdx()].gameList
-            .push($scope.mips.getEmptyGame($scope.sideInfo.length));
-    }
+
+
     $scope.endMatch = function(){
-        if(!validateGame()) return;
-        if(!validateSet()) return;
-        var curGame = $scope.getCurGame();
-        var winner = curGame.winner;
-        // Update the current set information
-        $scope.scoreInfo.setList[$scope.getCurSetIdx()].winner = winner;
-        $scope.scoreInfo.setList[$scope.getCurSetIdx()].summary[curGame.winner]++;
-        // Validate the match winner
-        var expWinner = $scope.mips.getMatchWinner($scope.scoreInfo.setList,
-            $scope.sideInfo.length);
-        if(winner !== expWinner){
-            AlertService.message("Check winner is valid.Expected: "+
-                $scope.mips.getSideNameTempalate(expWinner)+" .Set: "+
-                $scope.mips.getSideNameTempalate(winner) ,"Match Over");
+        var winner = $scope.mips.getGameWinner($scope.getCurGame());
+        if(winner === -1) {
+            AlertService.message("Game draw not possible :(","Game Winner");
             return;
         }
+        var setWinner =
+            $scope.mips.getSetWinner(
+                $scope.scoreInfo.setList[$scope.getCurSetIdx()].gameList,
+                $scope.sideInfo.length, winner);
+        if(setWinner === -1) {
+            AlertService.message("Set draw not possible :(","Set Winner");
+            return;
+        }
+        if(setWinner !== winner) {
+            console.error("Set winner not equal to game winner. Not Possible",setWinner, winner);
+        }
+        var matchWinner = $scope.mips.getMatchWinner($scope.scoreInfo.setList,
+            $scope.sideInfo.length, setWinner);
+        if(matchWinner === -1) {
+            AlertService.message("Match draw not possible :(","Match Winner");
+            return;
+        }
+        if(matchWinner !== setWinner) {
+            console.error("Match winner not equal to set winner. Not Possible",matchWinner, setWinner);
+        }
+        AlertService.confirm(
+            "Is "+$scope.mips.getSideNameTempalate(winner)+" the winner?",
+            "Match Winner",
+            function(response){
+        if(!response) return;
+        // Update game level
+        $scope.getCurGame().winner = winner;
+        $scope.scoreInfo.setList[$scope.getCurSetIdx()].summary[$scope.getCurGame().winner]++;
+        // Update set level
+        $scope.scoreInfo.setList[$scope.getCurSetIdx()].winner = winner;
+        $scope.scoreInfo.summary[winner]++;
         // Update match information
         $scope.scoreInfo.winner = winner;
-        $scope.scoreInfo.summary[winner]++;
-        AlertService.message("Winner: "+
-            $scope.mips.getSideNameTempalate(curGame.winner), "Match Over");
-
         var matchInfo = {
             // https://docs.angularjs.org/api/ng/function/angular.toJson [stripping $$]
             // https://docs.angularjs.org/api/ng/function/angular.fromJson
@@ -119,20 +137,18 @@ angular.module('MyApp')
             date: Date(),
             scoreInfo:$scope.scoreInfo
         }
-        GroupListService.addMatchInfo(matchInfo, $scope.groupId, function(error){
-            if(error){
-                AlertService.message("Error in saving matchInfo "+error, "Match Over");
-                return;
-            }
-            $state.go('user_home');
+        MatchListService.addMatchInfo(matchInfo, $scope.groupId, function(error){
+        if(error){
+            AlertService.message("Error in saving matchInfo "+error, "Match Over");
+            return;
+        }
+        $state.go('user_home');
+        MessageHandlingService.getNewMessages();
+        });
         });
     }
 
-    $scope.getCurGame = function(){
-        var setIdx = $scope.getCurSetIdx();
-        var gameIdx = $scope.getCurGameIdx();
-        return $scope.scoreInfo.setList[setIdx].gameList[gameIdx];
-    }
+
 
     var curScore = function(index, value){
         var curGame = $scope.getCurGame();

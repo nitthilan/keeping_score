@@ -1,5 +1,5 @@
 var mongoose = require('mongoose')
-, User = mongoose.model('User')
+, User = mongoose.model('ksuser')
 , restify = require('restify')
 , request = require('request');
 //var jwt = require('jwt-simple');

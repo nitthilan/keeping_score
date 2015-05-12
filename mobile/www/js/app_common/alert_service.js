@@ -15,5 +15,10 @@ angular.module('MyApp')
         }, 2000);
         console.log(message, title);
     };
+    that.confirm = function(message, title, callback){
+        $ionicPopup.confirm({
+            title: title, template: message
+        }).then(callback);
+    }
 }]);
 

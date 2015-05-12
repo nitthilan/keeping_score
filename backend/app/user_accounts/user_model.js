@@ -35,5 +35,5 @@ userSchema.methods.comparePassword = function(password, done) {
   });
 };
 
-var User = mongoose.model('User', userSchema);
+var User = mongoose.model('ksuser', userSchema);
 

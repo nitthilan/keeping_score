@@ -1,6 +1,6 @@
 <ion-view view-title="Home" hide-nav-bar="false">
     <ion-nav-buttons side="right">
-        <button type="submit" class="button button-icon ion-ios-refresh" ng-click="refreshGroupList()"></button>
+        <button type="submit" class="button button-icon ion-ios-refresh" ng-click="refreshMessageList()"></button>
         <button type="submit" class="button button-icon ion-person-stalker" ng-click="openCreateGroup()"></button>
         <button type="submit" class="button button-icon ion-flag" ng-click="openCreateMatch()"></button>
         <!-- a class="button button-icon icon ion-ios-plus-outline"></a -->
@@ -11,10 +11,10 @@
     </ion-nav-title>
     <ion-content scroll="true">
         <div class="list">
-            <a ng-repeat="group in groupList" ng-click="openGroupMatchList(group)" class="item" href="#">
+            <a ng-repeat="group in groupList" ng-click="openGroupMatchList(group, matchList[group._id])" class="item" href="#">
                 <h2>{{group.name}}</h2>
-                <div ng-show="group.matchList.length">
-                <p>{{mips.getSideInfo(group.matchList[group.matchList.length-1].sideInfo, group.matchList[group.matchList.length-1].scoreInfo)}} #<span am-time-ago="group.matchList[group.matchList.length-1].date"></span></p>
+                <div ng-show="matchList[group._id].length">
+                <p>{{mips.getSideInfo(matchList[group._id][matchList[group._id].length-1].sideInfo, matchList[group._id][matchList[group._id].length-1].scoreInfo)}} #<span am-time-ago="matchList[group._id][matchList[group._id].length-1].date"></span></p>
                 </div>
             </a>
         </div>

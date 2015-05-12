@@ -4,11 +4,11 @@ angular.module('MyApp')
     function($scope, $state, AlertService, UserDataInitService, GroupListService,
         $stateParams, MatchInfoParseService) {
     // Initialise the service into the scope so that it can be used directly in view for databinding
-    UserDataInitService.init();
+    //UserDataInitService.init();
 
     $scope.groupInfo = $stateParams.groupInfo;
 
-    $scope.matchList = $scope.groupInfo.matchList;//groupInfoGroupListService.getMatchList(groupId);
+    $scope.matchList = $stateParams.matchList;//groupInfoGroupListService.getMatchList(groupId);
     $scope.mips = MatchInfoParseService;
     $scope.openMatchDetail = function(match){
         $state.go('match_detail',{matchInfo:match});

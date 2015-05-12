@@ -1,93 +1,45 @@
 angular.module('MyApp')
-    .service('GroupListService', ['mySocket', '$filter', 'DataStorageService',
-        'MatchListService',
-        function(mySocket, $filter, DataStorageService, MatchListService){
+    .service('MatchListService', ['mySocket', 'DataStorageService',
+        function(mySocket, DataStorageService){
 
     var that = this;
     that.init = function(){
-        //that.createGroupList();
-        that.getGroupList();
+        //that.createStoredMatchList();
+        that.getStoredMatchList();
     }
     that.handleMessage = function(message, callback){
         if(message.eventInfo === "Create"){
-            that.groupList[message.groupId] = message.data;
-            DataStorageService.setObject("ksgrouplist", that.groupList);
-            MatchListService.addGroupMatchList(message.groupId);
+            that.groupMatchList[message.groupId].push(message.data);
+            DataStorageService.setObject("ksgroupmatchlist", that.groupMatchList);
         }
-        else if(message.eventInfo === "Update"){
-            that.groupList[message.groupId] = message.data;
-            DataStorageService.setObject("ksgrouplist", that.groupList);
-            //MatchListService.addGroupMatchList(message.groupId);
-        }
-        callback(null);
-    }
-    that.getGroupList = function(){
-        that.groupList = DataStorageService.getObject("ksgrouplist");
-    }
-    that.searchName = function(name, callback){
-        /* var nameList = [
-        {_id:"0000",displayName:"KJN"},
-        {_id:"0001",displayName:"KJN1"},
-        {_id:"0002",displayName:"KJN2"},
-        {_id:"0003",displayName:"KJN3"}
-        ];*/
-        mySocket.emit("findPlayers",
-            // http://docs.mongodb.org/manual/reference/operator/query/or/
-            {$or:[{displayName:{ "$regex": name, "$options": "i" }},
-             {email:{ "$regex": name, "$options": "i" }}]},'',
-            function(error, nameList){
-            if(error){
-                //console.log("Error in query", name);
-                return callback(error, null);
-            }
-            //console.log(error, nameList, name);
-            return callback(null, nameList);
-        });
-    }
-    that.create = function(groupInfo, callback){
-        mySocket.emit("groupCreate", groupInfo, callback);
-    }
+        return callback(null);
 
-    that.edit = function(id, groupInfo, callback){
-        mySocket.emit("groupUpdate", id, groupInfo,callback);
     }
-
-    that.createGroupList = function(){
-        var groupList = {
-            "0":{
-                _id:"0",
-                name:"group1",
-                adminList:[{playerId:"0000",displayName:"KJN0"}],
-                playerList:[
-                    {playerId:"0000",displayName:"KJN0"},
-                    {playerId:"0001",displayName:"KJN1", teamName:"team2"},
-                    {playerId:"0002",displayName:"KJN2", teamName:"team3"}
-                ],
-                tagList:["tag1","tag2"],
-            },
-            "1":{
-                _id:"1",
-                name:"group2",
-                playerList:[
-                    {playerId:"0000",displayName:"KJN"},
-                    {playerId:"0001",displayName:"KJN1"},
-                    {playerId:"0002",displayName:"KJN2"}
-                ],
-                tagList:["tag1","tag2"],
+    that.addGroupMatchList = function(groupId){
+        that.groupMatchList[groupId] = [];
+        DataStorageService.setObject("ksgroupmatchlist", that.groupMatchList);
+    }
+    that.addMatchInfo = function(matchInfo, groupId, callback){
+        mySocket.emit("addMatch", matchInfo, groupId, callback);
+    }
+    that.getMatchList = function(groupId){
+        for(var i=0;i<that.groupList.length;i++){
+            if(that.groupList[i]._id===groupId){
+                return that.groupList[i].matchList;
             }
         }
-        DataStorageService.setObject("ksgrouplist", groupList);
-        that.groupList1 = [{
-            _id:"0",
-            name:"group1",
-            adminList:[{playerId:"0000",displayName:"KJN0"}],
-            playerList:[
-                {playerId:"0000",displayName:"KJN0"},
-                {playerId:"0001",displayName:"KJN1", teamName:"team2"},
-                {playerId:"0002",displayName:"KJN2", teamName:"team3"}
-            ],
-            tagList:["tag1","tag2"],
-            matchList:[{
+        console.log("Error in finding the group", groupId);
+        return null;
+    }
+    that.getMatchInfo = function(matchIndex){
+        return that.groupList[0].matchList[0];
+    }
+    that.getStoredMatchList = function(){
+        that.groupMatchList = DataStorageService.getObject("ksgroupmatchlist");
+    }
+    that.createStoredMatchList = function(){
+        var groupMatchList = {
+            "0":[{
                 // Array of Sides and each array having array of players
                 sideInfo:[
                     [{playerId:"0000",displayName:"KJN1", teamName:"team1"}],
@@ -121,17 +73,8 @@ angular.module('MyApp')
                 },
                 tagList:["tag1"],
                 date:Date()
-            }]
-        },{
-            _id:"1",
-            name:"group2",
-            playerList:[
-                {playerId:"0000",displayName:"KJN"},
-                {playerId:"0001",displayName:"KJN1"},
-                {playerId:"0002",displayName:"KJN2"}
-            ],
-            tagList:["tag1","tag2"],
-            matchList:[{
+            }],
+            "1":[{
                 // Array of Sides and each array having array of players
                 sideInfo:[
                     [{playerId:"0000",displayName:"G2KJN1", teamName:"team1"}],
@@ -200,6 +143,7 @@ angular.module('MyApp')
                 tagList:["tag1"],
                 date:Date()
             }]
-        }];
+        }
+        DataStorageService.setObject("ksgroupmatchlist", groupMatchList);
     }
 }]);

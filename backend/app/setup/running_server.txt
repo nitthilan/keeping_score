@@ -1,0 +1,11 @@
+sudo npm install
+export NODE_ENV='production'
+printenv NODE_ENV
+sudo forever stop app/setup/keeping_score.js
+sudo rm /home/ubuntu/.forever/keeping_score_forever.log
+sudo -E forever -l keeping_score_forever.log -o keeping_score_out.log -e keeping_score_error.log start app/setup/keeping_score.js | ./node_modules/.bin/bunyan
+
+#http://stackoverflow.com/questions/20426116/node-js-processes-with-the-same-name-in-forever-are-closed-when-trying-to-close
+# sudo forever list - lists all the forever process. then use index to stop process
+# sudo forever stop 0 -
+

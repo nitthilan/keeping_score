@@ -20,6 +20,26 @@ angular.module('MyApp')
         empty_set.gameList.push(this.getEmptyGame(numSides));
         return empty_set
     }
+    var getMaxIdx = function(array){
+        var max = 0;
+        var idx = -1;
+        var secondIdx = -1;
+        for(var i in array){
+            if(array[i] > max){
+                max = array[i];
+                idx = i;
+            }
+            if(array[i] === max){
+                secondIdx = i;
+            }
+        }
+        // If there is another value same as max then return no winner
+        if(secondIdx !== idx){idx = -1}
+        return idx;
+    }
+    this.getGameWinner = function(curGame){
+        return getMaxIdx(curGame.scoreList);
+    }
     this.getNumGamesPerSide = function(gameList, numSides){
         var numGamesPerSide = [];
         for(var i=0;i<numSides;i++){
@@ -31,17 +51,11 @@ angular.module('MyApp')
         }
         return numGamesPerSide;
     }
-    this.getSetWinner = function(gameList, numSides){
+    this.getSetWinner = function(gameList, numSides, curGameWinner){
         var numGamesPerSide = this.getNumGamesPerSide(gameList, numSides);
-        var maxGames = 0;
-        var winner = -1;
-        for(var i in numGamesPerSide){
-            if(numGamesPerSide[i] > maxGames){
-                maxGames = numGamesPerSide[i];
-                winner = i;
-            }
-        }
-        return winner;
+        // Since current game winner would not be update
+        numGamesPerSide[curGameWinner]++;
+        return getMaxIdx(numGamesPerSide);
     }
     this.getNumSetsPerSide = function(setList, numSides){
         var numSetsPerSide = [];
@@ -54,17 +68,11 @@ angular.module('MyApp')
         }
         return numSetsPerSide;
     }
-    this.getMatchWinner = function(setList, numSides){
+    this.getMatchWinner = function(setList, numSides, curSetWinner){
         var numSetsPerSide = this.getNumSetsPerSide(setList, numSides);
-        var maxSets = 0;
-        var winner = -1;
-        for(var i in numSetsPerSide){
-            if(numSetsPerSide[i] > maxSets){
-                maxSets = numSetsPerSide[i];
-                winner = i;
-            }
-        }
-        return winner;
+        // Since current set winner would not be update
+        numSetsPerSide[curSetWinner]++;
+        return getMaxIdx(numSetsPerSide);
     }
     this.getSideInfo = function(sideList, scoreInfo){
         if(!sideList) return "";

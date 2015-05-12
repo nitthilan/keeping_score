@@ -60,6 +60,7 @@ angular.module('MyApp')
                 return;
             }
             $state.go('user_home');
+            MessageHandlingService.getNewMessages();
         }
         if(!$stateParams.groupInfo){
             GroupListService.create($scope.groupInfoEdit, callback);
@@ -123,7 +124,7 @@ angular.module('MyApp')
 
     $scope.teamList = {};
     for(var i in $scope.groupInfoEdit.playerList){
-        console.log($scope.groupInfoEdit.playerList[i].teamName);
+        //console.log($scope.groupInfoEdit.playerList[i].teamName);
         if($scope.groupInfoEdit.playerList[i].teamName){
             $scope.teamList[$scope.groupInfoEdit.playerList[i].teamName] = true;
         }
