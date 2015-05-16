@@ -192,7 +192,7 @@ var create_user_google = function(req, res, accessToken){
 
         var user = new User();
         user.google = profile.sub;
-        user.displayName = profile.name;
+        user.displayName = profile.email || profile.name;
         user.email = profile.email;
         user.save(function(err) {
           if(err) return res.send(400, { message: 'Unable to save user '+JSON.stringify(user)+'error:'+JSON.stringify(err) });

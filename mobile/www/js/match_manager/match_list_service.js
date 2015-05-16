@@ -11,6 +11,9 @@ angular.module('MyApp')
         if(message.eventInfo === "Create"){
             that.groupMatchList[message.groupId].push(message.data);
             DataStorageService.setObject("ksgroupmatchlist", that.groupMatchList);
+            that.groupMatchMeta[message.groupId] =
+                {id:message.groupId, unread:true,time:Date()};
+            DataStorageService.setObject("ksgroupmatchmeta", that.groupMatchMeta);
         }
         return callback(null);
 
@@ -18,11 +21,18 @@ angular.module('MyApp')
     that.addGroupMatchList = function(groupId){
         that.groupMatchList[groupId] = [];
         DataStorageService.setObject("ksgroupmatchlist", that.groupMatchList);
+        that.groupMatchMeta[groupId] =
+            {id:groupId, unread:true, time:Date()};
+        DataStorageService.setObject("ksgroupmatchmeta", that.groupMatchMeta);
+    }
+    that.readMatchList = function(groupId){
+        that.groupMatchMeta[groupId].unread = false;
+        DataStorageService.setObject("ksgroupmatchmeta", that.groupMatchMeta);
     }
     that.addMatchInfo = function(matchInfo, groupId, callback){
         mySocket.emit("addMatch", matchInfo, groupId, callback);
     }
-    that.getMatchList = function(groupId){
+    /*that.getMatchList = function(groupId){
         for(var i=0;i<that.groupList.length;i++){
             if(that.groupList[i]._id===groupId){
                 return that.groupList[i].matchList;
@@ -33,9 +43,12 @@ angular.module('MyApp')
     }
     that.getMatchInfo = function(matchIndex){
         return that.groupList[0].matchList[0];
-    }
+    }*/
     that.getStoredMatchList = function(){
+        //DataStorageService.clear();
         that.groupMatchList = DataStorageService.getObject("ksgroupmatchlist");
+        that.groupMatchMeta = DataStorageService.getObject("ksgroupmatchmeta");
+        //console.log("Hi", that.groupMatchMeta);
     }
     that.createStoredMatchList = function(){
         var groupMatchList = {

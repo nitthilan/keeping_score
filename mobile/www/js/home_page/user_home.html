@@ -6,17 +6,52 @@
         <!-- a class="button button-icon icon ion-ios-plus-outline"></a -->
         <a href="" ng-click="logout()" class="button">logout</a>
     </ion-nav-buttons>
-    <ion-nav-title>
-      Welcome {{userProfile.userProfile.displayName}}
+    <ion-nav-title> Updates
     </ion-nav-title>
     <ion-content scroll="true">
         <div class="list">
-            <a ng-repeat="group in groupList" ng-click="openGroupMatchList(group, matchList[group._id])" class="item" href="#">
-                <h2>{{group.name}}</h2>
-                <div ng-show="matchList[group._id].length">
-                <p>{{mips.getSideInfo(matchList[group._id][matchList[group._id].length-1].sideInfo, matchList[group._id][matchList[group._id].length-1].scoreInfo)}} #<span am-time-ago="matchList[group._id][matchList[group._id].length-1].date"></span></p>
+            <div class="item item-divider">
+            Hi {{userProfile.userProfile.displayName}}
+            </div>
+            <div ng-show="!{{groupList|keylength}}" class="card">
+                <div class="item item-text-wrap">
+                    <h2>Welcome to Keeping Score!</h2>
+                    <p>Create groups among your friends to share your gaming experiences and updates</p>
+                </div>
+                <div class="item item-text-wrap item-icon-left">
+                    <i class="icon ion-person-stalker"></i>
+                    to create new groups
+                </div>
+                <div class="item item-text-wrap item-icon-left">
+                    <i class="icon ion-flag"></i>
+                    to start a new match
+                </div>
+                <div class="item item-text-wrap item-icon-left">
+                    <i class="icon ion-ios-refresh"></i>
+                    to check any new updates from your friends
+                </div>
+            </div>
+            <div ng-show="{{groupList|keylength}}">
+            <a ng-repeat="meta in getMetaList() | filter:{unread:'true'}|orderBy:'time':true" ng-click="openGroupMatchList(groupList[meta.id], groupMatchList[meta.id])" class="item" href="#">
+                <h2><b>{{groupList[meta.id].name}}</b></h2>
+                <div ng-show="groupMatchList[meta.id].length">
+                <p><b>{{mips.getSideInfo(groupMatchList[meta.id][groupMatchList[meta.id].length-1].sideInfo, groupMatchList[meta.id][groupMatchList[meta.id].length-1].scoreInfo, 9, 5)}} #<span am-time-ago="groupMatchList[meta.id][groupMatchList[meta.id].length-1].date"></b></span></p>
+                </div>
+                <div ng-show="!groupMatchList[meta.id].length">
+                    <p><b>Welcome to the group</b><p>
+                </div>
+
+            </a>
+            <a ng-repeat="meta in getMetaList() | filter:{unread:'false'}|orderBy:'time':true" ng-click="openGroupMatchList(groupList[meta.id], groupMatchList[meta.id])" class="item" href="#">
+                <h2>{{groupList[meta.id].name}}</h2>
+                <div ng-show="groupMatchList[meta.id].length">
+                <p>{{mips.getSideInfo(groupMatchList[meta.id][groupMatchList[meta.id].length-1].sideInfo, groupMatchList[meta.id][groupMatchList[meta.id].length-1].scoreInfo, 9, 5)}} #<span am-time-ago="groupMatchList[meta.id][groupMatchList[meta.id].length-1].date"></span></p>
+                </div>
+                <div ng-show="!groupMatchList[meta.id].length">
+                    <p>Welcome to the group<p>
                 </div>
             </a>
+            </div>
         </div>
 
     </ion-content>

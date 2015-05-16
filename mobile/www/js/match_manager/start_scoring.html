@@ -7,11 +7,11 @@
     <ion-content scroll="true">
         <div class="list">
             <div ng-if="scoreInfo.setList.length">
-            <label class="item"><b>Set {{getCurSetIdx()}} Game {{getCurGameIdx()}}</b></label>
+            <label class="item"><b>Set {{getCurSetIdx()+1}} Game {{getCurGameIdx()+1}}</b></label>
             <div ng-repeat="score in getCurGame().scoreList track by $index">
                 <label class="item">
                     <div class="row">
-                        <div class="col"><b>{{mips.getSideNameTempalate($index)}}</b></div>
+                        <div class="col"><b>{{mips.getSideName(sideInfo[$index],5,5)}}</b></div>
                         <div class="col"><b>{{score}}</b></div>
                     </div>
                 </label>
@@ -20,19 +20,14 @@
                     <a ng-click="decScore($index)" class="button icon ion-minus-round"></a>
                 </div>
             </div>
-            <label class="item item-input item-select">
+            <!-- label class="item item-input item-select">
             <div class="input-label">Winner</div>
             <select ng-model="getCurGame().winner">
                 <option ng-repeat="item in sideInfo" value="{{$index}}">
                 {{mips.getSideNameTempalate($index)}}
                 </option>
             </select>
-            </label>
-            </div>
-            <div class="button-bar">
-                <a ng-click="addNewGame()" class="button button-positive">New Game</a>
-                <a ng-click="addNewSet()" class="button button-positive">New Set</a>
-                <a ng-click="endMatch()" class="button button-positive">End Match</a>
+            </label -->
             </div>
             <ion-list>
             <div class="item item-divider">
@@ -41,7 +36,7 @@
             <ion-item>
             <div class="row">
                 <div class="col"></div>
-                <div ng-repeat="side in sideInfo" class="col"><b>{{mips.getSideNameTempalate($index)}}</b></div>
+                <div ng-repeat="side in sideInfo" class="col"><b>{{mips.getSideName(sideInfo[$index],5,5)}}</b></div>
             </div>
             <div class="row">
                 <div class="col"><b>Games</b></div>
@@ -53,6 +48,11 @@
             </div>
             </ion-item>
             </ion-list>
+            <div class="button-bar">
+                <a ng-click="addNewGame()" class="button button-positive">New Game</a>
+                <a ng-click="addNewSet()" class="button button-positive">New Set</a>
+                <a ng-click="endMatch()" class="button button-positive">End Match</a>
+            </div>
         </div>
     </ion-content>
 </ion-view>

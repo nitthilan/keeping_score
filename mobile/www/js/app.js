@@ -60,6 +60,7 @@ MyApp.config(['$stateProvider', '$urlRouterProvider', '$authProvider', '$locatio
         }
       })
       .state('create_group', {
+        cache: false,
         url: '/create_group',
         templateUrl: 'js/group_manager/create_group.html',
         controller: 'CreateGroupCtrl',
@@ -73,6 +74,7 @@ MyApp.config(['$stateProvider', '$urlRouterProvider', '$authProvider', '$locatio
         }
       })
       .state('create_match', {
+        cache: false,
         url: '/create_match',
         templateUrl: 'js/match_manager/create_match.html',
         controller: 'CreateMatchCtrl',
@@ -85,6 +87,7 @@ MyApp.config(['$stateProvider', '$urlRouterProvider', '$authProvider', '$locatio
         }
       })
       .state('start_scoring', {
+        cache: false,
         url: '/start_scoring',
         templateUrl: 'js/match_manager/start_scoring.html',
         controller: 'StartScoringCtrl',
@@ -137,6 +140,7 @@ MyApp.config(['$stateProvider', '$urlRouterProvider', '$authProvider', '$locatio
       });
 
     $authProvider.loginRedirect = '/user_home';
+    $authProvider.platform = 'mobile';
     //$locationProvider.html5Mode(true);
 
     $urlRouterProvider.otherwise('/');

@@ -1,8 +1,8 @@
 angular.module('MyApp')
     .service('UserDataInitService', ['$auth', 'LoginDetectService', 'mySocket',
-        'GroupListService', 'UserProfile', 'MatchListService',
+        'GroupListService', 'UserProfile', 'MatchListService', 'HeartBeatService',
         function($auth, LoginDetectService, mySocket, GroupListService, UserProfile,
-            MatchListService){
+            MatchListService, HeartBeatService){
 
     var that = this;
 
@@ -12,6 +12,7 @@ angular.module('MyApp')
             GroupListService.init();
             UserProfile.init();
             MatchListService.init();
+            HeartBeatService.init();
 
             // Set flag to false
             LoginDetectService.resetLogin();

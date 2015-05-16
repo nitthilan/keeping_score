@@ -1,23 +1,25 @@
 angular.module('MyApp')
-    .service('MatchInfoParseService', [function(){
+    .service('MatchInfoParseService', ['$filter', function($filter){
 
-    this.getSideNameTempalate = function(i){
+    var that = this;
+
+    that.getSideNameTempalate = function(i){
         var t = ++i;
         return "Side "+t
     }
-    this.getEmptyGame = function(numSides){
+    that.getEmptyGame = function(numSides){
         var empty_game = {scoreList:[], winner:null};
         for(var i=0;i<numSides;i++){
             empty_game.scoreList.push(0);
         }
         return  empty_game;
     }
-    this.getEmptySet = function(numSides){
+    that.getEmptySet = function(numSides){
         var empty_set = {gameList:[],winner:null,summary:[]};
         for(var i=0;i<numSides;i++){
             empty_set.summary.push(0);
         }
-        empty_set.gameList.push(this.getEmptyGame(numSides));
+        empty_set.gameList.push(that.getEmptyGame(numSides));
         return empty_set
     }
     var getMaxIdx = function(array){
@@ -37,10 +39,10 @@ angular.module('MyApp')
         if(secondIdx !== idx){idx = -1}
         return idx;
     }
-    this.getGameWinner = function(curGame){
+    that.getGameWinner = function(curGame){
         return getMaxIdx(curGame.scoreList);
     }
-    this.getNumGamesPerSide = function(gameList, numSides){
+    that.getNumGamesPerSide = function(gameList, numSides){
         var numGamesPerSide = [];
         for(var i=0;i<numSides;i++){
             numGamesPerSide[i] = 0;
@@ -51,13 +53,13 @@ angular.module('MyApp')
         }
         return numGamesPerSide;
     }
-    this.getSetWinner = function(gameList, numSides, curGameWinner){
-        var numGamesPerSide = this.getNumGamesPerSide(gameList, numSides);
+    that.getSetWinner = function(gameList, numSides, curGameWinner){
+        var numGamesPerSide = that.getNumGamesPerSide(gameList, numSides);
         // Since current game winner would not be update
         numGamesPerSide[curGameWinner]++;
         return getMaxIdx(numGamesPerSide);
     }
-    this.getNumSetsPerSide = function(setList, numSides){
+    that.getNumSetsPerSide = function(setList, numSides){
         var numSetsPerSide = [];
         for(var i=0;i<numSides;i++){
             numSetsPerSide[i] = 0;
@@ -68,23 +70,27 @@ angular.module('MyApp')
         }
         return numSetsPerSide;
     }
-    this.getMatchWinner = function(setList, numSides, curSetWinner){
-        var numSetsPerSide = this.getNumSetsPerSide(setList, numSides);
+    that.getMatchWinner = function(setList, numSides, curSetWinner){
+        var numSetsPerSide = that.getNumSetsPerSide(setList, numSides);
         // Since current set winner would not be update
         numSetsPerSide[curSetWinner]++;
         return getMaxIdx(numSetsPerSide);
     }
-    this.getSideInfo = function(sideList, scoreInfo){
+    that.getSideName = function(sideInfo, limitName, limitTeam){
+        var sideName = "";
+        for(var j=0;j<sideInfo.length;j++){
+            sideName = sideName +
+                $filter('limitTo')(sideInfo[j].displayName, limitName) +
+                "("+$filter('limitTo')(sideInfo[j].teamName, limitTeam) +") ";
+        }
+        return sideName;
+    }
+    that.getSideInfo = function(sideList, scoreInfo, limitName, limitTeam){
         if(!sideList) return "";
         //console.log(sideList);
         var sideInfo = "";
         for(var i=0;i<sideList.length;i++){
-            var sideName = "";
-            for(var j=0;j<sideList[i].length;j++){
-                sideName = sideName +
-                    sideList[i][j].displayName +
-                    "("+sideList[i][j].teamName +") ";
-            }
+            var sideName = that.getSideName(sideList[i], limitName, limitTeam);
             sideInfo = sideInfo + sideName + "[" +scoreInfo.summary[i];
             if(scoreInfo.winner === i){ sideInfo = sideInfo + "W";}
             sideInfo = sideInfo + "]";
@@ -94,7 +100,7 @@ angular.module('MyApp')
         }
         return sideInfo;
     }
-    this.getTag = function(tagList){
+    that.getTag = function(tagList){
         var tagString = "";
         for(var i=0;i<tagList.length;i++){
             tagString = tagString + "#"+tagList[i];

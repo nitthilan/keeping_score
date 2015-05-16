@@ -23,6 +23,7 @@ angular.module('MyApp')
     }
     that.getGroupList = function(){
         that.groupList = DataStorageService.getObject("ksgrouplist");
+        if(!that.groupList) that.groupList = {};
     }
     that.searchName = function(name, callback){
         /* var nameList = [

@@ -9,11 +9,14 @@
     </ion-nav-title>
     <ion-content scroll="true">
         <div class="list">
-            <div ng-repeat="match in matchList" class="list list-inset" >
-                <a ng-click="openMatchDetail(match)" class="item item-divider" href="#">
-                    {{mips.getSideInfo(match.sideInfo, match.scoreInfo)}}
+            <div class="item" ng-show="!matchList.length">
+                <p><b>Welcome to the group. No new matches yet</b><p>
+            </div>
+            <div ng-repeat="match in matchList|orderBy:'date':true" class="list list-inset" >
+                <a ng-click="openMatchDetail(match)" href="#" class="item item-divider" >
+                    {{mips.getSideInfo(match.sideInfo, match.scoreInfo,9,5)}}
                 </a>
-                <div class="item">
+                <a ng-click="openMatchDetail(match)" href="#" class="item">
                     <div class="row">
                         <div class="col">Set</div>
                         <div ng-repeat="set in match.scoreInfo.setList" class="col">S{{$index}}</div>
@@ -22,11 +25,11 @@
                         <div class="col">{{mips.getSideNameTempalate($index)}}</div>
                         <div ng-repeat="set in match.scoreInfo.setList" class="col">{{set.summary[$parent.$index]}}</div>
                     </div>
-                </div>
-                <div ng-show="match.tagList.length" class="item item-divider">
+                </a>
+                <a ng-click="openMatchDetail(match)" href="#" class="item item-divider">
                     {{mips.getTag(match.tagList)}}
                     [<span am-time-ago="match.date"></span>]
-                </div>
+                </a>
             </div>
         </div>
     </ion-content>

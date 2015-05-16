@@ -15,6 +15,7 @@ angular.module('MyApp')
       .error(function(error) {
         that.userProfile = null;
         console.log("Error in getting user information");
+        //$rootScope.$apply();
       });
     };
     that.get = function(){

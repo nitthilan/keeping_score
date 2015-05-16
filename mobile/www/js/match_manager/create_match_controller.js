@@ -1,10 +1,10 @@
 angular.module('MyApp')
-  .controller('CreateMatchCtrl', ['$scope', '$state','AlertService','UserDataInitService',
-    '$ionicModal', 'GroupListService','MatchInfoParseService',
-    function($scope, $state, AlertService, UserDataInitService,
-        $ionicModal, GroupListService, MatchInfoParseService) {
+  .controller('CreateMatchCtrl', ['$scope', '$state','AlertService', '$ionicModal',
+   'GroupListService','MatchInfoParseService',
+    function($scope, $state, AlertService, $ionicModal,
+        GroupListService, MatchInfoParseService) {
     // Initialise the service into the scope so that it can be used directly in view for databinding
-    UserDataInitService.init();
+    //UserDataInitService.init();
 
     $scope.mips = MatchInfoParseService;
 

@@ -1,11 +1,12 @@
 angular.module('MyApp')
-  .controller('StartScoringCtrl', ['$scope', '$state','AlertService',
-    'UserDataInitService','$stateParams', 'MatchInfoParseService',
-    'MatchListService', 'MessageHandlingService',
-    function($scope, $state, AlertService, UserDataInitService, $stateParams,
-        MatchInfoParseService, MatchListService, MessageHandlingService) {
+  .controller('StartScoringCtrl', ['$scope', '$state','AlertService','$stateParams',
+   'MatchInfoParseService','MatchListService', 'MessageHandlingService', 'HeartBeatService',
+   '$ionicHistory',
+    function($scope, $state, AlertService, $stateParams,
+        MatchInfoParseService, MatchListService, MessageHandlingService,
+        HeartBeatService, $ionicHistory) {
     // Initialise the service into the scope so that it can be used directly in view for databinding
-    UserDataInitService.init();
+    //UserDataInitService.init();
 
     // Initialise sideInfo and tagList
     /*$scope.sideInfo = [
@@ -91,6 +92,19 @@ angular.module('MyApp')
 
 
     $scope.endMatch = function(){
+        if(!HeartBeatService.isConnected){
+            AlertService.confirm(
+                "Network not available. Should the match information be discarded? \
+                'OK' would discard data and take you to home page, \
+                'CANCEL' would make you stay in the same page till you get a network",
+                "Network Not Available",
+                function(response){
+            if(!response) return;
+            $state.go('user_home');
+            return;
+            });
+            return;
+        }
         var winner = $scope.mips.getGameWinner($scope.getCurGame());
         if(winner === -1) {
             AlertService.message("Game draw not possible :(","Game Winner");
@@ -144,6 +158,11 @@ angular.module('MyApp')
         }
         $state.go('user_home');
         MessageHandlingService.getNewMessages();
+        $ionicHistory.nextViewOptions({
+            disableAnimate: true,
+            disableBack: true,
+            historyRoot: true
+        });
         });
         });
     }

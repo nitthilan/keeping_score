@@ -1,9 +1,11 @@
 angular.module('MyApp')
   .controller('CreateGroupCtrl', ['$scope', '$state','$auth', 'AlertService',
     'UserDataInitService','$ionicModal', '$filter', 'GroupListService',
-    'UserProfile', '$stateParams',
+    'UserProfile', '$stateParams', 'MessageHandlingService', 'HeartBeatService',
+    '$ionicHistory',
     function($scope, $state, $auth, AlertService, UserDataInitService,
-        $ionicModal, $filter, GroupListService, UserProfile, $stateParams) {
+        $ionicModal, $filter, GroupListService, UserProfile, $stateParams,
+        MessageHandlingService, HeartBeatService, $ionicHistory) {
     // Initialise the service into the scope so that it can be used directly in view for databinding
     UserDataInitService.init();
 
@@ -31,6 +33,19 @@ angular.module('MyApp')
 
 
     $scope.saveGroupInfo = function(){
+        if(!HeartBeatService.isConnected){
+            AlertService.confirm(
+                "Network not available. Should the match information be discarded? \
+                'ok' would discard data and take you to home page, \
+                'no' would make you stay in the same page till you get a network",
+                "Network Not Available",
+                function(response){
+            if(!response) return;
+            $state.go('user_home');
+            return;
+            });
+            return;
+        }
         if(!$scope.groupInfoEdit.name){
             AlertService.message('Invalid Name', "Group");
             return;
@@ -61,6 +76,11 @@ angular.module('MyApp')
             }
             $state.go('user_home');
             MessageHandlingService.getNewMessages();
+            $ionicHistory.nextViewOptions({
+                disableAnimate: true,
+                disableBack: true,
+                historyRoot: true
+            });
         }
         if(!$stateParams.groupInfo){
             GroupListService.create($scope.groupInfoEdit, callback);
@@ -148,7 +168,7 @@ angular.module('MyApp')
             }
             $scope.team.name = teamName;
         }
-        //console.log($scope.team.unchoosenPlayerList);
+        //console.log("open", $scope.team, $scope.groupInfoEdit.playerList);
         $scope.create_team_modal.show();
     };
     $scope.closeCreateTeamModal = function() {
@@ -157,15 +177,16 @@ angular.module('MyApp')
             for(i in $scope.team.unchoosenPlayerList){
                 var player = $scope.team.unchoosenPlayerList[i];
                 $filter('filter')($scope.groupInfoEdit.playerList,
-                    {_id:player._id})[0].teamName = null;
+                    {playerId:player.playerId})[0].teamName = null;
             }
             for(i in $scope.team.choosenPlayerList){
                 var player = $scope.team.choosenPlayerList[i];
                 $filter('filter')($scope.groupInfoEdit.playerList,
-                    {_id:player._id})[0].teamName = $scope.team.name;
+                    {playerId:player.playerId})[0].teamName = $scope.team.name;
             }
             $scope.teamList[$scope.team.name] = true;
         }
+        //console.log("close", $scope.team, $scope.groupInfoEdit.playerList);
         $scope.create_team_modal.hide();
     };
     $scope.addPlayerToTeam = function(player, $index){
