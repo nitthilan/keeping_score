@@ -147,6 +147,32 @@ app.get('/auth/unlink/:provider', ensureAuthenticated, function(req, res) {
   });
 });
 
+app.post('/auth/mobile',function(req, res){
+  var profile = req.body;
+  var query_id = {}
+  if(profile.type === "google"){ query_id["google"] = profile.id; }
+  else if(profile.type === "facebook"){ query_id["facebook"] = profile.id; }
+  log.info("User Profile "+JSON.stringify(profile));
+  log.info("User query "+JSON.stringify(query_id));
+
+  User.findOne(query_id, function(err, existingUser) {
+    if (existingUser) {
+      log.info("User existing "+JSON.stringify(existingUser));
+      return res.send({ token: createToken(existingUser) });
+    }
+
+    var user = new User();
+    if(profile.type === 'google'){ user.google = profile.id; }
+    else if(profile.type === 'facebook'){ user.facebook = profile.id; }
+    user.displayName = profile.name || profile.email;
+    user.email = profile.email;
+    user.save(function(err) {
+      if(err) return res.send(400, { message: 'Unable to save user '+JSON.stringify(user)+'error:'+JSON.stringify(err) });
+      log.info("User new "+JSON.stringify(user));
+      res.send({ token: createToken(user) });
+    });
+  });
+});
 
 
 // |--------------------------------------------------------------------------
@@ -300,33 +326,6 @@ app.post('/auth/facebook', function(req, res) {
 });
 app.post('/auth/facebook/mobile', function(req, res) {
   create_user_facebook(req, res, req.body.accessToken);
-});
-
-app.post('/auth/mobile',function(req, res){
-  var profile = req.body;
-  var query_id = {}
-  if(profile.type === "google"){ query_id["google"] = profile.id; }
-  else if(profile.type === "facebook"){ query_id["facebook"] = profile.id; }
-  log.info("User Profile "+JSON.stringify(profile));
-  log.info("User query "+JSON.stringify(query_id));
-
-  User.findOne(query_id, function(err, existingUser) {
-    if (existingUser) {
-      log.info("User existing "+JSON.stringify(existingUser));
-      return res.send({ token: createToken(existingUser) });
-    }
-
-    var user = new User();
-    if(profile.type === 'google'){ user.google = profile.id; }
-    else if(profile.type === 'facebook'){ user.facebook = profile.id; }
-    user.displayName = profile.email || profile.name;
-    user.email = profile.email;
-    user.save(function(err) {
-      if(err) return res.send(400, { message: 'Unable to save user '+JSON.stringify(user)+'error:'+JSON.stringify(err) });
-      log.info("User new "+JSON.stringify(user));
-      res.send({ token: createToken(user) });
-    });
-  });
 });
 
 /*
