@@ -304,8 +304,11 @@ app.post('/auth/facebook/mobile', function(req, res) {
 
 app.post('/auth/mobile',function(req, res){
   var profile = req.body;
+  var query_id = {}
+  if(profile.type === "google"){ query_id["google"] = profile.id; }
+  else if(profile.type === "facebook"){ query_id["facebook"] = profile.id; }
 
-  User.findOne({ profile.type: profile.id }, function(err, existingUser) {
+  User.findOne(query_id, function(err, existingUser) {
     if (existingUser) {
       return res.send({ token: createToken(existingUser) });
     }
@@ -320,7 +323,7 @@ app.post('/auth/mobile',function(req, res){
       res.send({ token: createToken(user) });
     });
   });
-})
+});
 
 /*
 // |--------------------------------------------------------------------------
