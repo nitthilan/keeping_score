@@ -302,6 +302,26 @@ app.post('/auth/facebook/mobile', function(req, res) {
   create_user_facebook(req, res, req.body.accessToken);
 });
 
+app.post('/auth/mobile',function(req, res){
+  var profile = req.body;
+
+  User.findOne({ profile.type: profile.id }, function(err, existingUser) {
+    if (existingUser) {
+      return res.send({ token: createToken(existingUser) });
+    }
+
+    var user = new User();
+    if(profile.type === 'google'){ user.google = profile.id; }
+    else (profile.type === 'facebook'){ user.facebook = profile.id; }
+    user.displayName = profile.email || profile.name;
+    user.email = profile.email;
+    user.save(function(err) {
+      if(err) return res.send(400, { message: 'Unable to save user '+JSON.stringify(user)+'error:'+JSON.stringify(err) });
+      res.send({ token: createToken(user) });
+    });
+  });
+})
+
 /*
 // |--------------------------------------------------------------------------
 // | Login with GitHub

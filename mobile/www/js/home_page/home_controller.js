@@ -53,6 +53,18 @@ angular.module('MyApp')
                 delete $window.localStorage['satellizer_token'];
                 loginFailure();
               });
+              //var peopleApiUrl = 'https://www.googleapis.com/plus/v1/people/me/openIdConnect';
+              //var headers = { Authorization: 'Bearer ' + accessToken };
+              $http.get("https://www.googleapis.com/oauth2/v1/userinfo",
+                { params: { access_token: result.access_token,
+                  alt: "json" }}).then(function(result) {
+                    console.log("FB Profile Data", result);
+                $scope.profileData = result.data;
+              }, function(error) {
+                  alert("There was a problem getting your profile.  Check the logs for details.");
+                  console.log(error);
+              });
+
           }, function(error) {
               // error
               console.log(error);
@@ -61,7 +73,7 @@ angular.module('MyApp')
       }
       else{
         $cordovaOauth.facebook("787479751340055",
-          ["email"]).then(function(result) {
+          ["email","public_profile"]).then(function(result) {
               // results
               console.log(result);
               var post_url = 'http://www.brightboard.co.in:3002/auth/facebook/mobile';
@@ -75,6 +87,17 @@ angular.module('MyApp')
               error(function(data, status, headers, config) {
                 delete $window.localStorage['satellizer_token'];
                 loginFailure();
+              });
+              //https://github.com/nraboy/ng-cordova-facebook-example/blob/master/www/js/app.js
+              $http.get("https://graph.facebook.com/v2.2/me",
+                { params: { access_token: result.access_token,
+                  fields: "id,name,email,gender",
+                  format: "json" }}).then(function(result) {
+                    console.log("FB Profile Data", result);
+                $scope.profileData = result.data;
+              }, function(error) {
+                  alert("There was a problem getting your profile.  Check the logs for details.");
+                  console.log(error);
               });
           }, function(error) {
               // error
