@@ -233,6 +233,7 @@ var create_user_facebook = function(req, res, accessToken){
 
     // Step 3a. Link user accounts.
     if (req.headers.authorization) {
+      log.info("Inside req header authorization"+req.headers.authorization);
       User.findOne({ facebook: profile.id }, function(err, existingUser) {
         if (existingUser) {
           return res.send(409, { message: 'There is already a Facebook account that belongs to you'+JSON.stringify(existingUser) });
@@ -251,7 +252,8 @@ var create_user_facebook = function(req, res, accessToken){
           user.email = user.email || profile.email;
           user.save(function(err) {
             if(err) return res.send(400, { message: 'Unable to save user '+JSON.stringify(user)+'error:'+JSON.stringify(err) });
-            res.send({ token: createToken(user) });
+            log.info("linked user"+JSON.stringify(user));
+            return res.send({ token: createToken(user) });
           });
         });
       });
@@ -259,16 +261,18 @@ var create_user_facebook = function(req, res, accessToken){
       // Step 3b. Create a new user account or return an existing one.
       User.findOne({ facebook: profile.id }, function(err, existingUser) {
         if (existingUser) {
+          log.info("Existing user"+JSON.stringify(existingUser));
           return res.send({ token: createToken(existingUser) });
         }
 
         var user = new User();
         user.facebook = profile.id;
-        user.displayName = profile.name;
+        user.displayName = profile.email || profile.name;
         //https://developers.facebook.com/docs/graph-api/reference/user
         user.email = profile.email;
         user.save(function(err) {
           if(err) return res.send(400, { message: 'Unable to save user '+JSON.stringify(user)+'error:'+JSON.stringify(err) });
+          log.info("New user"+JSON.stringify(user));
           res.send({ token: createToken(user) });
         });
       });

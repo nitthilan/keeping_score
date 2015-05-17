@@ -5,6 +5,14 @@ angular.module('MyApp')
       $ionicHistory, $cordovaOauth, $window, $state) {
     $ionicHistory.clearHistory();
 
+    console.log(ionic.Platform.device(),ionic.Platform.isWebView(),
+      ionic.Platform.isAndroid(), ionic.Platform.version(),
+      ionic.Platform.platform());
+
+    $scope.shouldDisplay = function(){
+      return (ionic.Platform.platform() === 'win32');
+    }
+
     var loginSuccessful = function(log){
       LoginDetectService.setLogin();
       console.log(log);
@@ -28,25 +36,52 @@ angular.module('MyApp')
         });
     };
     $scope.authenticate = function(provider) {
-      $cordovaOauth.google("542331465101-qjdso0o95td4ooucs678avsdmsljqaas.apps.googleusercontent.com",
-        ["https://www.googleapis.com/auth/userinfo.email"]).then(function(result) {
-            // results
-            console.log(result);
-            var post_url = 'http://www.brightboard.co.in:3002/auth/google/mobile';
-            $http.post(post_url, {accessToken:result.access_token}).
-            success(function(data, status, headers, config) {
-              $window.localStorage['satellizer_token'] = data.token;
-              $state.go("user_home");
-              loginSuccessful("Used google or facebook token");
-            }).
-            error(function(data, status, headers, config) {
-              delete $window.localStorage['satellizer_token'];
+      delete $window.localStorage['satellizer_token'];
+      if(provider === 'google'){
+        $cordovaOauth.google("542331465101-qjdso0o95td4ooucs678avsdmsljqaas.apps.googleusercontent.com",
+          ["https://www.googleapis.com/auth/userinfo.email"]).then(function(result) {
+              // results
+              console.log(result);
+              var post_url = 'http://www.brightboard.co.in:3002/auth/google/mobile';
+              $http.post(post_url, {accessToken:result.access_token}).
+              success(function(data, status, headers, config) {
+                $window.localStorage['satellizer_token'] = data.token;
+                $state.go("user_home");
+                loginSuccessful("Used google or facebook token");
+              }).
+              error(function(data, status, headers, config) {
+                delete $window.localStorage['satellizer_token'];
+                loginFailure();
+              });
+          }, function(error) {
+              // error
+              console.log(error);
               loginFailure();
-            });
-        }, function(error) {
-            // error
-            console.log(error);
-            loginFailure();
-        });
+          });
+      }
+      else{
+        $cordovaOauth.facebook("787479751340055",
+          ["email"]).then(function(result) {
+              // results
+              console.log(result);
+              var post_url = 'http://www.brightboard.co.in:3002/auth/facebook/mobile';
+              $http.post(post_url, {accessToken:result.access_token}).
+              success(function(data, status, headers, config) {
+                console.log("facebook", data, status, headers, config);
+                $window.localStorage['satellizer_token'] = data.token;
+                $state.go("user_home");
+                loginSuccessful("Used google or facebook token");
+              }).
+              error(function(data, status, headers, config) {
+                delete $window.localStorage['satellizer_token'];
+                loginFailure();
+              });
+          }, function(error) {
+              // error
+              console.log(error);
+              loginFailure();
+          });
+      }
+
     };
   }]);
