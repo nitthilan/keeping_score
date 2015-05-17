@@ -307,9 +307,12 @@ app.post('/auth/mobile',function(req, res){
   var query_id = {}
   if(profile.type === "google"){ query_id["google"] = profile.id; }
   else if(profile.type === "facebook"){ query_id["facebook"] = profile.id; }
+  log.info("User Profile "+JSON.stringify(profile));
+  log.info("User query "+JSON.stringify(query_id));
 
   User.findOne(query_id, function(err, existingUser) {
     if (existingUser) {
+      log.info("User existing "+JSON.stringify(existingUser));
       return res.send({ token: createToken(existingUser) });
     }
 
@@ -320,6 +323,7 @@ app.post('/auth/mobile',function(req, res){
     user.email = profile.email;
     user.save(function(err) {
       if(err) return res.send(400, { message: 'Unable to save user '+JSON.stringify(user)+'error:'+JSON.stringify(err) });
+      log.info("User new "+JSON.stringify(user));
       res.send({ token: createToken(user) });
     });
   });
