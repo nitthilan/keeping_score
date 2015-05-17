@@ -51,13 +51,14 @@ angular.module('MyApp')
         console.log("Google access_token", result.access_token);
         $http.get(google_profile_url, { params: { access_token: result.access_token, alt: "json" }}).
           then(function(result) {
-        console.log("Google Profile Data", result);
+        //console.log("Google Profile Data", result);
         var profile = {
-          name: result.email || result.name,
-          email: result.email,
-          id: result.id,
+          name: result.data.name || result.data.email,
+          email: result.data.email,
+          id: result.data.id,
           type: "google"
         };
+        console.log("Google Profile Data", result, profile);
         $http.post(server_user_url, profile).success(function(data, status, headers, config) {
           console.log("Google", data, status, headers, config);
           $window.localStorage['satellizer_token'] = data.token;
@@ -79,11 +80,11 @@ angular.module('MyApp')
           fields: "id,name,email,gender", format: "json" }}).then(function(result) {
         console.log("FB Profile Data", result);
         var profile = {
-          name: result.email || result.name,
-          email: result.email,
-          id: result.id,
+          name: result.data.name || result.data.email,
+          email: result.data.email,
+          id: result.data.id,
           type: "facebook"
-        }
+        };
         $http.post(server_user_url, profile).success(function(data, status, headers, config) {
           console.log("Facebook", data, status, headers, config);
           $window.localStorage['satellizer_token'] = data.token;
