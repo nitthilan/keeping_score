@@ -315,7 +315,7 @@ app.post('/auth/mobile',function(req, res){
 
     var user = new User();
     if(profile.type === 'google'){ user.google = profile.id; }
-    else (profile.type === 'facebook'){ user.facebook = profile.id; }
+    else if(profile.type === 'facebook'){ user.facebook = profile.id; }
     user.displayName = profile.email || profile.name;
     user.email = profile.email;
     user.save(function(err) {
