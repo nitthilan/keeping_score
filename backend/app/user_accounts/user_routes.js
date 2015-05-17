@@ -230,6 +230,9 @@ var create_user_facebook = function(req, res, accessToken){
   var graphApiUrl = 'https://graph.facebook.com/me';
   // Step 2. Retrieve profile information about the current user.
   request.get({ url: graphApiUrl, qs: accessToken, json: true }, function(err, response, profile) {
+    log.info("Facebook response"+JSON.stringify(response));
+    log.info("Facebook profile"+JSON.stringify(profile));
+    log.info("Facebook error"+JSON.stringify(err));
 
     // Step 3a. Link user accounts.
     if (req.headers.authorization) {
