@@ -75,7 +75,7 @@ angular.module('MyApp')
                 return;
             }
             $state.go('user_home');
-            MessageHandlingService.getNewMessages();
+            //Not required since user_home controller is not cached and has a message handling service MessageHandlingService.getNewMessages();
             $ionicHistory.nextViewOptions({
                 disableAnimate: true,
                 disableBack: true,
