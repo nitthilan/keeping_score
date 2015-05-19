@@ -15,6 +15,17 @@ module.exports = function(config){
     user.displayName = 'Keeping Scorer'
     user.save();
   });*/
+  // Create a user into the table
+  User.findOne({email:'demouser@keepingscore.co.in'}, function(err, existingUser){
+    if(existingUser) return;
+    // Create a user into the table
+    var user = new User();
+    user.email = 'demouser@keepingscore.co.in';
+    user.password = 'demouser';
+    user.displayName = 'Keeping Scorer'
+    user.save();
+  });
+
   // Make the temporary and public files folder:
   /*mkdirp(config.temp_folder_path, function(err) {
     if(err) log.error("Error in creating temporary folder");

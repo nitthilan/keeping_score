@@ -17,6 +17,9 @@ angular.module('MyApp')
     getObject: function(key) {
       //console.log($window.localStorage[key]);
       return angular.fromJson(($window.localStorage[key] || '{}'));
+    },
+    remove: function(key){
+      $window.localStorage.removeItem(key);
     }
   }
 }]);

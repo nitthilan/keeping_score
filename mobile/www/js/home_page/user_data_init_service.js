@@ -19,4 +19,8 @@ angular.module('MyApp')
             console.log("Login token "+$auth.getToken());
         }
     };
+    that.reset = function(){
+        MatchListService.reset();
+        GroupListService.reset();
+    }
 }]);

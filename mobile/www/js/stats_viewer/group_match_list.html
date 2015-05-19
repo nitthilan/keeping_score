@@ -1,8 +1,7 @@
 <ion-view view-title="Match List" hide-nav-bar="false">
     <ion-nav-buttons side="right">
+        <button type="submit" class="button button-icon ion-flag" ng-click="openCreateMatch()" ></button>
         <button type="submit" class="button button-icon ion-edit" ng-click="editGroup()"></button>
-        <!--button type="submit" class="button button-icon ion-calendar" ng-click="openFileDialog('camera')"></button>
-        <button type="submit" class="button button-icon ion-flag" ng-click="openFileDialog('camera')"></button -->
     </ion-nav-buttons>
     <ion-nav-title>
       {{groupInfo.name}}
@@ -12,11 +11,12 @@
             <div class="item" ng-show="!matchList.length">
                 <p><b>Welcome to the group. No new matches yet</b><p>
             </div>
-            <div ng-repeat="match in matchList|orderBy:'date':true" class="list list-inset" >
-                <a ng-click="openMatchDetail(match)" href="#" class="item item-divider" >
-                    {{mips.getSideInfo(match.sideInfo, match.scoreInfo,9,5)}}
-                </a>
-                <a ng-click="openMatchDetail(match)" href="#" class="item">
+            <div ng-repeat="match in matchList|orderBy:'date':true">
+                <div class="list card">
+                    <a ng-click="openMatchDetail(match)" href="#" class="item">
+                    <h2>{{mips.getSideInfo(match.sideInfo, match.scoreInfo,9,5)}}</h2>
+                    <p>{{mips.getTag(match.tagList)}}
+                    [<span am-time-ago="match.date"></span>]</p>
                     <div class="row">
                         <div class="col">Set</div>
                         <div ng-repeat="set in match.scoreInfo.setList" class="col">S{{$index}}</div>
@@ -25,12 +25,30 @@
                         <div class="col">{{mips.getSideNameTempalate($index)}}</div>
                         <div ng-repeat="set in match.scoreInfo.setList" class="col">{{set.summary[$parent.$index]}}</div>
                     </div>
-                </a>
-                <a ng-click="openMatchDetail(match)" href="#" class="item item-divider">
-                    {{mips.getTag(match.tagList)}}
-                    [<span am-time-ago="match.date"></span>]
-                </a>
+                    </a>
+                </div>
+                <div class="list card">
+                    <a ng-click="openMatchDetail(match)" href="#" class="item">
+                    <h2>{{mips.getSideInfo(match.sideInfo, match.scoreInfo,9,5)}}</h2>
+                    <p>{{mips.getTag(match.tagList)}}
+                    [<span am-time-ago="match.date"></span>]</p>
+                    <div class="row">
+                        <div ng-repeat="set in match.scoreInfo.setList" class="col">S{{$index}}<br>{{set.summary[0]}}<br>{{set.summary[1]}}</div>
+                        <div ng-repeat="set in match.scoreInfo.setList">
+                        <div ng-repeat="game in set.gameList" class="col">S{{$parent.$index}}G{{$index}}<br>{{game.scoreList[0]}}<br>{{game.scoreList[1]}}</div>
+                        </div>
+                    </div>
+                    </a>
+                </div>
             </div>
         </div>
     </ion-content>
+    <!-- ion-footer-bar align-title="left" keyboard-attach class="bar-light item-input-inset">
+        <label class="item-input-wrapper">
+            <input type="search" placeholder="Chat Message">
+        </label>
+        <button class="button button-clear">
+            Send
+        </button>
+    </ion-footer-bar -->
 </ion-view>

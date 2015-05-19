@@ -27,6 +27,17 @@ angular.module('MyApp')
     $scope.refreshMessageList = function(){
       MessageHandlingService.getNewMessages();
     }
+    $scope.resetDataHack = function(){
+        AlertService.confirm(
+            "All User Data would be lost. R u nuts?",
+            "Debugging Hack",
+            function(response){
+                if(!response) return;
+                UserDataInitService.reset();
+                $scope.logout();
+        });
+
+    }
     $scope.groupList = GroupListService.groupList;
     $scope.groupMatchList = MatchListService.groupMatchList;
     $scope.groupMatchMeta = MatchListService.groupMatchMeta;
@@ -43,14 +54,19 @@ angular.module('MyApp')
       //console.log(metaList);
       return metaList;
     }
+    $scope.getGroupListSize = function(){
+      return Object.keys($scope.groupList).length;
+    }
 
   }]);
-angular.module('MyApp')
+
+/* angular.module('MyApp')
 .filter('keylength', function(){
   return function(input){
     if(!angular.isObject(input)){
       throw Error("Usage of non-objects with keylength filter!!")
     }
+    console.log("length of gorup list", Object.keys(input).length);
     return Object.keys(input).length;
   }
 });
@@ -69,6 +85,6 @@ angular.module('MyApp')
     console.log(items, field, reverse);
     return filtered;
   };
-});
+}); */
 
 

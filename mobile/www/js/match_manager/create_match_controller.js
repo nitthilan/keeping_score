@@ -1,8 +1,8 @@
 angular.module('MyApp')
   .controller('CreateMatchCtrl', ['$scope', '$state','AlertService', '$ionicModal',
-   'GroupListService','MatchInfoParseService',
+   'GroupListService','MatchInfoParseService', '$stateParams',
     function($scope, $state, AlertService, $ionicModal,
-        GroupListService, MatchInfoParseService) {
+        GroupListService, MatchInfoParseService, $stateParams) {
     // Initialise the service into the scope so that it can be used directly in view for databinding
     //UserDataInitService.init();
 
@@ -10,7 +10,24 @@ angular.module('MyApp')
 
     $scope.groupList = GroupListService.groupList;
 
-    $scope.selected_group = null;
+
+    var init_selected_group = function(group){
+        $scope.selected_group = group;
+        $scope.unchoosenList = [];
+        for(var i=0;i<$scope.selected_group.playerList.length;i++){
+            $scope.unchoosenList.push($scope.selected_group.playerList[i]);
+        }
+        $scope.groupTagList = [];
+        for(var i=0;i<$scope.selected_group.tagList.length;i++){
+            $scope.groupTagList.push($scope.selected_group.tagList[i]);
+        }
+    }
+    if($stateParams.groupInfo){
+        init_selected_group($stateParams.groupInfo);
+    }
+    else{
+        $scope.selected_group = null;
+    }
     $ionicModal.fromTemplateUrl('choose_group.html', {
         scope: $scope,
         animation: 'slide-in-up'
@@ -22,15 +39,7 @@ angular.module('MyApp')
     };
     $scope.closeChooseGroupModal = function(group) {
         //console.log("The selected player "+$scope.selected_player.data);
-        $scope.selected_group = group;
-        $scope.unchoosenList = [];
-        for(var i=0;i<$scope.selected_group.playerList.length;i++){
-            $scope.unchoosenList.push($scope.selected_group.playerList[i]);
-        }
-        $scope.groupTagList = [];
-        for(var i=0;i<$scope.selected_group.tagList.length;i++){
-            $scope.groupTagList.push($scope.selected_group.tagList[i]);
-        }
+        init_selected_group(group);
         init_num_sides();
         init_side_info();
         $scope.choose_group_modal.hide();

@@ -2,7 +2,7 @@
     <ion-nav-buttons side="right">
         <button type="submit" class="button button-icon ion-ios-refresh" ng-click="refreshMessageList()"></button>
         <button type="submit" class="button button-icon ion-person-stalker" ng-click="openCreateGroup()"></button>
-        <button type="submit" class="button button-icon ion-flag" ng-click="openCreateMatch()"></button>
+        <button type="submit" class="button button-icon ion-flag" ng-click="openCreateMatch()" on-hold="resetDataHack()"></button>
         <!-- a class="button button-icon icon ion-ios-plus-outline"></a -->
         <a href="" ng-click="logout()" class="button">logout</a>
     </ion-nav-buttons>
@@ -13,7 +13,7 @@
             <div class="item item-divider">
             Hi {{userProfile.userProfile.displayName}}
             </div>
-            <div ng-show="!{{groupList|keylength}}" class="card">
+            <div ng-show="!getGroupListSize()" class="card">
                 <div class="item item-text-wrap">
                     <h2>Welcome to Keeping Score!</h2>
                     <p>Create groups among your friends to share your gaming experiences and updates</p>
@@ -31,7 +31,7 @@
                     to check any new updates from your friends
                 </div>
             </div>
-            <div ng-show="{{groupList|keylength}}">
+            <div ng-show="getGroupListSize()">
             <a ng-repeat="meta in getMetaList() | filter:{unread:'true'}|orderBy:'time':true" ng-click="openGroupMatchList(groupList[meta.id], groupMatchList[meta.id])" class="item" href="#">
                 <h2><b>{{groupList[meta.id].name}}</b></h2>
                 <div ng-show="groupMatchList[meta.id].length">

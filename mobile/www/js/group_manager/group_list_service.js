@@ -17,13 +17,15 @@ angular.module('MyApp')
         else if(message.eventInfo === "Update"){
             that.groupList[message.groupId] = message.data;
             DataStorageService.setObject("ksgrouplist", that.groupList);
-            //MatchListService.addGroupMatchList(message.groupId);
         }
         callback(null);
     }
     that.getGroupList = function(){
         that.groupList = DataStorageService.getObject("ksgrouplist");
         if(!that.groupList) that.groupList = {};
+    }
+    that.reset = function(){
+        DataStorageService.remove("ksgrouplist");
     }
     that.searchName = function(name, callback){
         /* var nameList = [

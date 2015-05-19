@@ -48,6 +48,7 @@ MyApp.config(['$stateProvider', '$urlRouterProvider', '$authProvider', '$locatio
         }
       })
       .state('user_home', {
+        cache: false,
         url: '/user_home',
         templateUrl: 'js/home_page/user_home.html',
         controller: 'UserHomeCtrl',
@@ -78,6 +79,7 @@ MyApp.config(['$stateProvider', '$urlRouterProvider', '$authProvider', '$locatio
         url: '/create_match',
         templateUrl: 'js/match_manager/create_match.html',
         controller: 'CreateMatchCtrl',
+        params:{groupInfo:null},
         resolve: {
           authenticated: ['$location', '$auth', function($location, $auth) {
             if (!$auth.isAuthenticated()) {

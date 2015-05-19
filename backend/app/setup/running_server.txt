@@ -10,3 +10,11 @@ sudo -E forever -l keeping_score_forever.log -o keeping_score_out.log -e keeping
 # sudo forever list - lists all the forever process. then use index to stop process
 # sudo forever stop 0 -
 
+
+use production
+show collections
+show dbs
+db.ksusers.find()
+db.ksusers.insert({email:})
+
+

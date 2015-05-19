@@ -50,6 +50,10 @@ angular.module('MyApp')
         that.groupMatchMeta = DataStorageService.getObject("ksgroupmatchmeta");
         //console.log("Hi", that.groupMatchMeta);
     }
+    that.reset = function(){
+        DataStorageService.remove("ksgroupmatchlist");
+        DataStorageService.remove("ksgroupmatchmeta");
+    }
     that.createStoredMatchList = function(){
         var groupMatchList = {
             "0":[{
